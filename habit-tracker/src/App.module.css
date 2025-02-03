@@ -1,0 +1,60 @@
+:root {
+    --bg-color: #0d1117;
+    --text-color: #c9d1d9;
+    --border-color: #30363d;
+    --button-bg: #21262d;
+    --button-hover: #30363d;
+    --calendar-bg: #161b22;
+  }
+  
+  .container {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .header {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+  }
+  
+  .addButton {
+    background: var(--button-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .addButton:hover {
+    background: var(--button-hover);
+  }
+  
+  .goalsList {
+    display: grid;
+    gap: 24px;
+  }
+  
+  .goalCard {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 16px;
+    background: var(--calendar-bg);
+  }
+  
+  .doneButton {
+    margin-top: 16px;
+    background: #238636;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .doneButton:hover {
+    background: #2ea043;
+  }

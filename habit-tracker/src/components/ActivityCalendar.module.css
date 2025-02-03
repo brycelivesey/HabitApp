@@ -1,0 +1,25 @@
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(53, 1fr);
+    gap: 3px;
+    padding: 16px 0;
+  }
+  
+  .day {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+  
+  .dayEmpty {
+    background-color: #161b22;
+    border: 1px solid #2d333b;
+  }
+  
+  .dayFilled {
+    background-color: #238636;
+  }
+  
+  .day:hover {
+    border: 1px solid #3fb950;
+  }
