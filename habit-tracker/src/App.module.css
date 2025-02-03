@@ -7,11 +7,24 @@
     --calendar-bg: #161b22;
   }
   
-  .container {
+  /* Reset default margins and padding */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
     background-color: var(--bg-color);
     color: var(--text-color);
     min-height: 100vh;
+  }
+  
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
   }
   
   .header {
@@ -36,6 +49,8 @@
   .goalsList {
     display: grid;
     gap: 24px;
+    max-width: 800px; /* More constrained width for better readability */
+    margin: 0 auto; /* Center the goals list */
   }
   
   .goalCard {
