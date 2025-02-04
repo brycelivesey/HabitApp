@@ -56,7 +56,9 @@ body {
     gap: 24px;
 }
 
+
 .goalCard {
+    position: relative;
     background: #1a1a1a;
     border-radius: 8px;
     padding: 20px;
@@ -112,4 +114,78 @@ body {
 
 .doneButton:hover {
     background: #2ea043;
+}
+
+.deleteButton {
+    position: absolute;
+    top: 20px;    
+    right: 20px;  
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteButton:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(--calendar-bg);
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.confirmButton {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.confirmButton:hover {
+    background: #dc2626;
+}
+
+.cancelButton:hover {
+    background: var(--button-hover);
 }

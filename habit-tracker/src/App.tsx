@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './App.module.css';
-import ActivityCalendar from './components/ActivityCalendar';
 import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
+import Goal from './components/Goal';
 
 const App: React.FC = () => {
   const [goals, setGoals] = useState<DailyGoal[]>(() => {
@@ -21,7 +21,6 @@ const App: React.FC = () => {
     return [];
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
 
   useEffect(() => {
     try {
@@ -35,6 +34,12 @@ const App: React.FC = () => {
     setGoals(prev => [...prev, newGoal]);
     setIsModalOpen(false);
   };
+
+  const handleDeleteGoal = (goalId: string) => {
+    const updatedGoals = goals.filter(goal => goal.id !== goalId);
+    setGoals(updatedGoals);
+    localStorage.setItem('goals', JSON.stringify(updatedGoals));
+};
 
   const handleComplete = (goalId: string) => {
     const today = new Date().toISOString().split('T')[0];
@@ -54,13 +59,6 @@ const App: React.FC = () => {
     }));
   };
 
-  const handleYearSelect = (goalId: string, year: number | undefined) => {
-    setSelectedYears(prev => ({
-      ...prev,
-      [goalId]: year
-    }));
-  };
-
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -74,29 +72,12 @@ const App: React.FC = () => {
 
       <div className={styles.goalsList}>
         {goals.map(goal => (
-          <div key={goal.id} className={styles.goalCard}>
-            <h3>{goal.title}</h3>
-            <ActivityCalendar
-              activityLog={goal.activityLog}
-              year={selectedYears[goal.id]}
-              onYearSelect={(year) => handleYearSelect(goal.id, year)}
-            />
-            <div className={styles.goalFooter}>
-              <ul className={styles.taskList}>
-                {goal.tasks.map(task => (
-                  <li key={task.id} className={styles.taskItem}>
-                    {task.name}
-                  </li>
-                ))}
-              </ul>
-              <button
-                className={styles.doneButton}
-                onClick={() => handleComplete(goal.id)}
-              >
-                Done
-              </button>
-            </div>
-          </div>
+           <Goal 
+           key={goal.id} 
+           goal={goal} 
+           onDelete={handleDeleteGoal}
+           handleComplete={handleComplete}
+       />
         ))}
       </div>
 
