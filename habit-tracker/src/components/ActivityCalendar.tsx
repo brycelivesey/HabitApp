@@ -64,42 +64,66 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, year, onYearSelect }) 
         , [year, daysArray.length]);
 
     const calendarGrid = useMemo(() => (
-        Array.from({ length: totalWeeks }, (_, weekIndex) => (
-            <div key={weekIndex} className={styles.column}>
-                {[0, 1, 2, 3, 4, 5, 6].map(dayOfWeek => {
-                    const date = daysArray[weekIndex * 7 + dayOfWeek];
-                    if (!date) return null;
+        <div>
+            <div className={styles.weekRow}>
+                {Array.from({ length: totalWeeks }, (_, weekIndex) => {
+                    const firstDayOfWeek = daysArray[weekIndex * 7];
+                    const isFirstSundayOfMonth = firstDayOfWeek &&
+                        firstDayOfWeek.getDate() <= 7 &&
+                        firstDayOfWeek.getDay() === 0;
 
-                    const dateStr = date.toISOString().split('T')[0];
-                    if (year && date.getFullYear() !== year) {
-                        return <div key={dateStr} className={styles.day} style={{ visibility: 'hidden' }} />;
-                    }
-
-                    const formattedDate = date.toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric'
-                    }).replace(/(\d+)/, (d) => {
-                        const num = parseInt(d, 10);
-                        const suffix = ['th', 'st', 'nd', 'rd'][(num > 3 && num < 21) || num % 10 > 3 ? 0 : num % 10];
-                        return num + suffix;
-                    });
-
-                    const count = activityLog[dateStr] || 0;
+                    // Don't show label if it's the most recent week and would overflow
+                    const isLastWeek = weekIndex === totalWeeks - 1;
+                    const shouldShowLabel = isFirstSundayOfMonth && !isLastWeek;
 
                     return (
-                        <div
-                            key={dateStr}
-                            className={`${styles.day} ${getColorClass(count)}`}
-                            style={{ opacity: getOpacity(count) }}
-                            title={`${count} contributions on ${formattedDate}`}
-                            role="tooltip"
-                            aria-label={`${count} contributions on ${formattedDate}`}
-                        />
+                        <div key={weekIndex} className={styles.column}>
+                            <div className={styles.monthLabel}>
+                                {shouldShowLabel ? firstDayOfWeek.toLocaleString('en-US', { month: 'short' }) : ''}
+                            </div>
+                        </div>
                     );
                 })}
             </div>
-        ))
+            <div className={styles.weekRow}>
+                {Array.from({ length: totalWeeks }, (_, weekIndex) => (
+                    <div key={weekIndex} className={styles.column}>
+                        {[0, 1, 2, 3, 4, 5, 6].map(dayOfWeek => {
+                            const date = daysArray[weekIndex * 7 + dayOfWeek];
+                            if (!date) return null;
+
+                            const dateStr = date.toISOString().split('T')[0];
+                            if (year && date.getFullYear() !== year) {
+                                return <div key={dateStr} className={styles.day} style={{ visibility: 'hidden' }} />;
+                            }
+
+                            const formattedDate = date.toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            }).replace(/(\d+)/, (d) => {
+                                const num = parseInt(d, 10);
+                                const suffix = ['th', 'st', 'nd', 'rd'][(num > 3 && num < 21) || num % 10 > 3 ? 0 : num % 10];
+                                return num + suffix;
+                            });
+
+                            const count = activityLog[dateStr] || 0;
+
+                            return (
+                                <div
+                                    key={dateStr}
+                                    className={`${styles.day} ${getColorClass(count)}`}
+                                    style={{ opacity: getOpacity(count) }}
+                                    title={`${count} contributions on ${formattedDate}`}
+                                    role="tooltip"
+                                    aria-label={`${count} contributions on ${formattedDate}`}
+                                />
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
+        </div>
     ), [daysArray, totalWeeks, year, activityLog, getColorClass, getOpacity]);
 
     return (
