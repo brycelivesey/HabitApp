@@ -57,20 +57,57 @@ body {
 }
 
 .goalCard {
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 16px;
-    background: var(--calendar-bg);
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.goalFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 16px;
+    width: 100%;
+}
+
+.taskList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    flex: 1;
+    width: calc(100% - 80px - 16px);
+}
+
+.taskItem {
+    position: relative;
+    padding-left: 16px;
+    color: #fff;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.taskItem::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #238636;
 }
 
 .doneButton {
-    margin-top: 16px;
     background: #238636;
     color: white;
     border: none;
-    padding: 6px 16px;
     border-radius: 6px;
+    padding: 8px 16px;
     cursor: pointer;
+    transition: background-color 0.2s;
+    width: 80px;
+    margin-left: 16px;
 }
 
 .doneButton:hover {

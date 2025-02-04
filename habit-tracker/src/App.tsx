@@ -81,12 +81,21 @@ const App: React.FC = () => {
               year={selectedYears[goal.id]}
               onYearSelect={(year) => handleYearSelect(goal.id, year)}
             />
-            <button
-              className={styles.doneButton}
-              onClick={() => handleComplete(goal.id)}
-            >
-              Done
-            </button>
+            <div className={styles.goalFooter}>
+              <ul className={styles.taskList}>
+                {goal.tasks.map(task => (
+                  <li key={task.id} className={styles.taskItem}>
+                    {task.name}
+                  </li>
+                ))}
+              </ul>
+              <button
+                className={styles.doneButton}
+                onClick={() => handleComplete(goal.id)}
+              >
+                Done
+              </button>
+            </div>
           </div>
         ))}
       </div>
