@@ -145,3 +145,27 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.colorSelector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.colorOption {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+}
+
+.colorOption.selected {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px #30363d;
+}
+
+.colorOption:hover {
+    transform: scale(1.1);
+}

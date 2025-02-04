@@ -14,12 +14,12 @@ const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
 
-  const handleYearSelect = (goalId: string, year: number | undefined) => {
-    setSelectedYears(prev => ({
-      ...prev,
-      [goalId]: year
-    }));
-  };
+    const handleYearSelect = (goalId: string, year: number | undefined) => {
+        setSelectedYears(prev => ({
+            ...prev,
+            [goalId]: year
+        }));
+    };
 
     const handleDelete = () => {
         setShowConfirmation(true);
@@ -44,13 +44,18 @@ const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
                 <h3>{goal.title}</h3>
                 <ActivityCalendar
                     activityLog={goal.activityLog}
+                    color={goal.color}
                     year={selectedYears[goal.id]}
                     onYearSelect={(year) => handleYearSelect(goal.id, year)}
                 />
                 <div className={styles.goalFooter}>
                     <ul className={styles.taskList}>
                         {goal.tasks.map(task => (
-                            <li key={task.id} className={styles.taskItem}>
+                            <li
+                                key={task.id}
+                                className={styles.taskItem}
+                                style={{ ['--bullet-color' as string]: goal.color }}
+                            >
                                 {task.name}
                             </li>
                         ))}
@@ -58,6 +63,7 @@ const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
                     <button
                         className={styles.doneButton}
                         onClick={() => handleComplete(goal.id)}
+                        style={{ backgroundColor: goal.color }}
                     >
                         Done
                     </button>

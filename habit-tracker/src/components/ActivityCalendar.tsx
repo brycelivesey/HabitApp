@@ -5,11 +5,12 @@ interface Props {
     activityLog: {
         [date: string]: number;
     };
+    color: string;
     year?: number;
     onYearSelect?: (year: number | undefined) => void;
 }
 
-const ActivityCalendar: React.FC<Props> = ({ activityLog, year, onYearSelect }) => {
+const ActivityCalendar: React.FC<Props> = ({ activityLog, color, year, onYearSelect }) => {
     const currentYear = new Date().getFullYear();
     const years = [currentYear, currentYear - 1, currentYear - 2];
 
@@ -113,7 +114,10 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, year, onYearSelect }) 
                                 <div
                                     key={dateStr}
                                     className={`${styles.day} ${getColorClass(count)}`}
-                                    style={{ opacity: getOpacity(count) }}
+                                    style={{
+                                        opacity: getOpacity(count),
+                                        backgroundColor: count > 0 ? color : undefined
+                                    }}
                                     title={`${count} contributions on ${formattedDate}`}
                                     role="tooltip"
                                     aria-label={`${count} contributions on ${formattedDate}`}

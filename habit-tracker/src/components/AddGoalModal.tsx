@@ -10,6 +10,17 @@ interface Props {
 const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
     const [title, setTitle] = useState('');
     const [tasks, setTasks] = useState<Task[]>([{ id: '1', name: '' }]);
+    const [selectedColor, setSelectedColor] = useState('#238636');
+
+    const colors = [
+        '#238636', // Default green
+        '#0969DA', // Blue
+        '#8957E5', // Purple
+        '#DE4D4D', // Red
+        '#F78166', // Orange
+        '#E4BF7A', // Yellow
+        '#6E7681', // Gray
+    ];
 
     const handleAddTask = () => {
         setTasks(prev => [...prev, { id: crypto.randomUUID(), name: '' }]);
@@ -34,6 +45,7 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
             id: crypto.randomUUID(),
             title,
             tasks: tasks.filter(task => task.name.trim() !== ''),
+            color: selectedColor,
             activityLog: {}
         };
 
@@ -64,6 +76,22 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
                             placeholder="Enter goal title"
                             required
                         />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label>Color</label>
+                        <div className={styles.colorSelector}>
+                            {colors.map(color => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    className={`${styles.colorOption} ${selectedColor === color ? styles.selected : ''}`}
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => setSelectedColor(color)}
+                                    aria-label={`Select ${color} color`}
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     <div className={styles.formGroup}>

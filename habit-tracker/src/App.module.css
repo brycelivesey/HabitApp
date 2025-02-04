@@ -97,7 +97,7 @@ body {
     content: "•";
     position: absolute;
     left: 0;
-    color: #238636;
+    color: var(--bullet-color, #238636);
 }
 
 .doneButton {
@@ -118,8 +118,8 @@ body {
 
 .deleteButton {
     position: absolute;
-    top: 20px;    
-    right: 20px;  
+    top: 20px;
+    right: 20px;
     background: transparent;
     border: none;
     color: #ef4444;
