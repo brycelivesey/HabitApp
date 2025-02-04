@@ -21,7 +21,7 @@ const App: React.FC = () => {
     return [];
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedYears, setSelectedYears] = useState<{[goalId: string]: number | undefined}>({});
+  const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
 
   useEffect(() => {
     try {
@@ -38,7 +38,7 @@ const App: React.FC = () => {
 
   const handleComplete = (goalId: string) => {
     const today = new Date().toISOString().split('T')[0];
-    
+
     setGoals(prev => prev.map(goal => {
       if (goal.id === goalId) {
         const currentCount = goal.activityLog[today] || 0;
@@ -64,24 +64,24 @@ const App: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <button 
+        <button
           className={styles.addButton}
           onClick={() => setIsModalOpen(true)}
         >
           + Add Goal
         </button>
       </header>
-      
+
       <div className={styles.goalsList}>
         {goals.map(goal => (
           <div key={goal.id} className={styles.goalCard}>
             <h3>{goal.title}</h3>
-            <ActivityCalendar 
-              activityLog={goal.activityLog} 
+            <ActivityCalendar
+              activityLog={goal.activityLog}
               year={selectedYears[goal.id]}
               onYearSelect={(year) => handleYearSelect(goal.id, year)}
             />
-            <button 
+            <button
               className={styles.doneButton}
               onClick={() => handleComplete(goal.id)}
             >

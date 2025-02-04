@@ -9,55 +9,55 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
-  
-  .modal {
+}
+
+.modal {
     background-color: #161b22;
     border-radius: 6px;
     width: 90%;
     max-width: 500px;
     padding: 16px;
     border: 1px solid #30363d;
-  }
-  
-  .modalHeader {
+}
+
+.modalHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
     padding-bottom: 16px;
     border-bottom: 1px solid #30363d;
-  }
-  
-  .modalHeader h2 {
+}
+
+.modalHeader h2 {
     margin: 0;
     color: #c9d1d9;
-  }
-  
-  .closeButton {
+}
+
+.closeButton {
     background: none;
     border: none;
     color: #c9d1d9;
     font-size: 24px;
     cursor: pointer;
     padding: 0;
-  }
-  
-  .closeButton:hover {
+}
+
+.closeButton:hover {
     color: #ffffff;
-  }
-  
-  .formGroup {
+}
+
+.formGroup {
     margin-bottom: 16px;
-  }
-  
-  .formGroup label {
+}
+
+.formGroup label {
     display: block;
     margin-bottom: 8px;
     color: #c9d1d9;
-  }
-  
-  .formGroup input {
+}
+
+.formGroup input {
     width: 100%;
     padding: 8px 12px;
     background-color: #0d1117;
@@ -65,32 +65,32 @@
     border-radius: 6px;
     color: #c9d1d9;
     margin-bottom: 8px;
-  }
-  
-  .formGroup input:focus {
+}
+
+.formGroup input:focus {
     outline: none;
     border-color: #58a6ff;
-  }
-  
-  .taskInput {
+}
+
+.taskInput {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
-  }
-  
-  .removeTask {
+}
+
+.removeTask {
     background: none;
     border: none;
     color: #c9d1d9;
     cursor: pointer;
     padding: 0 8px;
-  }
-  
-  .removeTask:hover {
+}
+
+.removeTask:hover {
     color: #ff7b72;
-  }
-  
-  .addTask {
+}
+
+.addTask {
     background: none;
     border: 1px solid #30363d;
     color: #c9d1d9;
@@ -99,49 +99,49 @@
     cursor: pointer;
     width: 100%;
     margin-top: 8px;
-  }
-  
-  .addTask:hover {
+}
+
+.addTask:hover {
     background: #21262d;
-  }
-  
-  .modalFooter {
+}
+
+.modalFooter {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid #30363d;
-  }
-  
-  .cancelButton {
+}
+
+.cancelButton {
     background: #21262d;
     border: 1px solid #30363d;
     color: #c9d1d9;
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
-  }
-  
-  .cancelButton:hover {
+}
+
+.cancelButton:hover {
     background: #30363d;
-  }
-  
-  .submitButton {
+}
+
+.submitButton {
     background: #238636;
     border: none;
     color: white;
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
-  }
-  
-  .submitButton:hover {
+}
+
+.submitButton:hover {
     background: #2ea043;
-  }
-  
-  .submitButton:disabled {
+}
+
+.submitButton:disabled {
     background: #238636;
     opacity: 0.5;
     cursor: not-allowed;
-  }
+}
