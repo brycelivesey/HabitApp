@@ -53,18 +53,23 @@
 
 .yearButton {
     width: 60px;
-    background: #161b22;
-    border: 1px solid #2d333b;
+    background: transparent;
+    border: 1px solid transparent; 
     color: #c9d1d9;
     padding: 6px 12px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.yearButton:focus {
+    outline: none;
 }
 
 .yearButton:hover {
-    background: #1f6feb33;
+    background: #2d333b;
+    border-color: #2d333b;
 }
 
 .yearButton.selected {
