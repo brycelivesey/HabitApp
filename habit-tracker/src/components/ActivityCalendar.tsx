@@ -8,7 +8,7 @@ interface Props {
   year?: number;
 }
 
-const ActivityCalendar: React.FC<Props> = ({ activityLog, year = new Date().getFullYear() }) => {
+const ActivityCalendar: React.FC<Props> = ({ activityLog, year }) => {
   const getColorClass = (count: number) => {
     if (count === 0) return styles.dayEmpty;
     return styles.dayFilled;
@@ -20,30 +20,62 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, year = new Date().getF
   };
 
   const getDaysArray = () => {
-    const today = new Date();
-    const mostRecentSunday = new Date(today);
-    mostRecentSunday.setDate(today.getDate() - today.getDay());
-    
-    const startDate = new Date(mostRecentSunday);
-    startDate.setDate(startDate.getDate() - 364);
-    
-    const days: Date[] = [];
-    for (let dt = new Date(startDate); dt <= today; dt.setDate(dt.getDate() + 1)) {
-      days.push(new Date(dt));
+    if (year) {
+      // For specific year view
+      const startDate = new Date(year, 0, 1); // January 1st
+      const endDate = new Date(year, 11, 31); // December 31st
+      
+      // Get the days before January 1st to fill the first week
+      const daysBeforeStart = startDate.getDay();
+      if (daysBeforeStart > 0) {
+        startDate.setDate(startDate.getDate() - daysBeforeStart);
+      }
+      
+      // Get the days after December 31st to fill the last week
+      const daysAfterEnd = 6 - endDate.getDay();
+      if (daysAfterEnd > 0) {
+        endDate.setDate(endDate.getDate() + daysAfterEnd);
+      }
+
+      const days: Date[] = [];
+      for (let dt = new Date(startDate); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+        days.push(new Date(dt));
+      }
+      return days;
+    } else {
+      // For rolling 52-week view
+      const today = new Date();
+      const mostRecentSunday = new Date(today);
+      mostRecentSunday.setDate(today.getDate() - today.getDay());
+      
+      const startDate = new Date(mostRecentSunday);
+      startDate.setDate(startDate.getDate() - 364);
+      
+      const days: Date[] = [];
+      for (let dt = new Date(startDate); dt <= today; dt.setDate(dt.getDate() + 1)) {
+        days.push(new Date(dt));
+      }
+      return days;
     }
-    
-    return days;
   };
+
+  const totalWeeks = year 
+    ? Math.ceil((getDaysArray().length) / 7)
+    : 53;
 
   return (
     <div className={styles.calendar}>
-      {Array.from({ length: 53 }, (_, weekIndex) => (
+      {Array.from({ length: totalWeeks }, (_, weekIndex) => (
         <div key={weekIndex} className={styles.column}>
           {[0, 1, 2, 3, 4, 5, 6].map(dayOfWeek => {
             const date = getDaysArray()[weekIndex * 7 + dayOfWeek];
             if (!date) return null;
             
             const dateStr = date.toISOString().split('T')[0];
+            // Skip dates outside the selected year when year is specified
+            if (year && date.getFullYear() !== year) {
+              return <div key={dateStr} className={styles.day} style={{ visibility: 'hidden' }} />;
+            }
             const formattedDate = date.toLocaleDateString('en-US', { 
               month: 'long', 
               day: 'numeric',
