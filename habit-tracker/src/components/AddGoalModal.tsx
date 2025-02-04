@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DailyGoal, Task } from '../types';
 import styles from './AddGoalModal.module.css';
+import { HexColorPicker } from 'react-colorful';
 
 interface Props {
     onClose: () => void;
@@ -11,16 +12,7 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
     const [title, setTitle] = useState('');
     const [tasks, setTasks] = useState<Task[]>([{ id: '1', name: '' }]);
     const [selectedColor, setSelectedColor] = useState('#238636');
-
-    const colors = [
-        '#238636', // Default green
-        '#0969DA', // Blue
-        '#8957E5', // Purple
-        '#DE4D4D', // Red
-        '#F78166', // Orange
-        '#E4BF7A', // Yellow
-        '#6E7681', // Gray
-    ];
+    const [showColorPicker, setShowColorPicker] = useState(false);
 
     const handleAddTask = () => {
         setTasks(prev => [...prev, { id: crypto.randomUUID(), name: '' }]);
@@ -68,29 +60,36 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>
                         <label htmlFor="title">Goal Title</label>
-                        <input
-                            id="title"
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter goal title"
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label>Color</label>
-                        <div className={styles.colorSelector}>
-                            {colors.map(color => (
+                        <div className={styles.titleColorContainer}>
+                            <input
+                                id="title"
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Enter goal title"
+                                required
+                            />
+                            <div className={styles.colorPickerContainer}>
                                 <button
-                                    key={color}
                                     type="button"
-                                    className={`${styles.colorOption} ${selectedColor === color ? styles.selected : ''}`}
-                                    style={{ backgroundColor: color }}
-                                    onClick={() => setSelectedColor(color)}
-                                    aria-label={`Select ${color} color`}
+                                    className={styles.colorPreview}
+                                    onClick={() => setShowColorPicker(!showColorPicker)}
+                                    style={{ backgroundColor: selectedColor }}
+                                    aria-label="Select color"
                                 />
-                            ))}
+                                {showColorPicker && (
+                                    <div className={styles.colorPickerPopover}>
+                                        <div 
+                                            className={styles.colorPickerCover}
+                                            onClick={() => setShowColorPicker(false)}
+                                        />
+                                        <HexColorPicker 
+                                            color={selectedColor} 
+                                            onChange={setSelectedColor}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
