@@ -29,7 +29,7 @@
   
   .header {
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     padding: 16px 0;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 24px;
@@ -50,7 +50,7 @@
   
   .goalsList {
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     display: grid;
     gap: 24px;
   }

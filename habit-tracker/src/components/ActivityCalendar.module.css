@@ -29,3 +29,42 @@
   .day:hover {
     border: 1px solid #3fb950;
   }
+
+  .calendarContainer {
+    display: grid;
+    grid-template-columns: auto 100px; /* Calendar takes natural width, year selector gets fixed width */
+    gap: 20px;
+    width: 100%;
+  }
+  
+
+  .yearSelector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Takes full height of container */
+    width: 100%; /* Takes full width of its grid column */
+  }
+
+.yearButton {
+  width: 60px;
+  background: #161b22;
+  border: 1px solid #2d333b;
+  color: #c9d1d9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.yearButton:hover {
+  background: #1f6feb33;
+}
+
+.yearButton.selected {
+  background: #1f6feb;
+  border-color: #1f6feb;
+}
