@@ -5,18 +5,29 @@ import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
 
 const App: React.FC = () => {
-  const [goals, setGoals] = useState<DailyGoal[]>([]);
+  const [goals, setGoals] = useState<DailyGoal[]>(() => {
+    const savedGoals = localStorage.getItem('habitGoals');
+    if (savedGoals) {
+      try {
+        const parsedGoals = JSON.parse(savedGoals);
+        if (Array.isArray(parsedGoals)) {
+          return parsedGoals;
+        }
+      } catch (error) {
+        console.error('Error parsing goals from localStorage:', error);
+        localStorage.removeItem('habitGoals');
+      }
+    }
+    return [];
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const savedGoals = localStorage.getItem('habitGoals');
-    if (savedGoals) {
-      setGoals(JSON.parse(savedGoals));
+    try {
+      localStorage.setItem('habitGoals', JSON.stringify(goals));
+    } catch (error) {
+      console.error('Error saving goals to localStorage:', error);
     }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('habitGoals', JSON.stringify(goals));
   }, [goals]);
 
   const handleAddGoal = (newGoal: DailyGoal) => {

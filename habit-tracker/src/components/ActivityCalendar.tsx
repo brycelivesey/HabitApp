@@ -20,11 +20,15 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, year = new Date().getF
   };
 
   const getDaysArray = () => {
-    const startDate = new Date(year, 0, 1);
-    const endDate = new Date(year, 11, 31);
-    const days: Date[] = [];
+    const today = new Date();
+    const mostRecentSunday = new Date(today);
+    mostRecentSunday.setDate(today.getDate() - today.getDay());
     
-    for (let dt = new Date(startDate); dt <= endDate; dt.setDate(dt.getDate() + 1)) {
+    const startDate = new Date(mostRecentSunday);
+    startDate.setDate(startDate.getDate() - 364);
+    
+    const days: Date[] = [];
+    for (let dt = new Date(startDate); dt <= today; dt.setDate(dt.getDate() + 1)) {
       days.push(new Date(dt));
     }
     
@@ -33,19 +37,37 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, year = new Date().getF
 
   return (
     <div className={styles.calendar}>
-      {getDaysArray().map(date => {
-        const dateStr = date.toISOString().split('T')[0];
-        const count = activityLog[dateStr] || 0;
-        
-        return (
-          <div
-            key={dateStr}
-            className={`${styles.day} ${getColorClass(count)}`}
-            style={{ opacity: getOpacity(count) }}
-            title={`${count} contributions on ${dateStr}`}
-          />
-        );
-      })}
+      {Array.from({ length: 53 }, (_, weekIndex) => (
+        <div key={weekIndex} className={styles.column}>
+          {[0, 1, 2, 3, 4, 5, 6].map(dayOfWeek => {
+            const date = getDaysArray()[weekIndex * 7 + dayOfWeek];
+            if (!date) return null;
+            
+            const dateStr = date.toISOString().split('T')[0];
+            const formattedDate = date.toLocaleDateString('en-US', { 
+              month: 'long', 
+              day: 'numeric',
+              year: 'numeric'
+            }).replace(/(\d+)/, (d) => {
+              const num = parseInt(d, 10);
+              const suffix = ['th', 'st', 'nd', 'rd'][(num > 3 && num < 21) || num % 10 > 3 ? 0 : num % 10];
+              return num + suffix;
+            });
+            const count = activityLog[dateStr] || 0;
+  
+            return (
+              <div
+                key={dateStr}
+                className={`${styles.day} ${getColorClass(count)}`}
+                style={{ opacity: getOpacity(count) }}
+                title={`${count} contributions on ${formattedDate}`}
+                role="tooltip"
+                aria-label={`${count} contributions on ${formattedDate}`}
+              />
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };

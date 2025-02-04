@@ -1,8 +1,14 @@
 .calendar {
-    display: grid;
-    grid-template-columns: repeat(53, 1fr);
+    display: flex;
+    flex-direction: row;
     gap: 3px;
     padding: 16px 0;
+  }
+  
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
   
   .day {
