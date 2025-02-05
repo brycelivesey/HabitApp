@@ -1,9 +1,9 @@
 import React, { useState, DragEvent } from 'react';
 import styles from '../App.module.css';
-import { FaTrash } from 'react-icons/fa';
 import { MdDragIndicator } from 'react-icons/md';
 import ActivityCalendar from './ActivityCalendar';
 import { DailyGoal } from '../types';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 
 interface GoalProps {
     goal: DailyGoal;
@@ -26,6 +26,7 @@ const Goal: React.FC<GoalProps> = ({
 }) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
+    const [showMenu, setShowMenu] = useState(false);
 
     const handleYearSelect = (goalId: string, year: number | undefined) => {
         setSelectedYears(prev => ({
@@ -52,13 +53,25 @@ const Goal: React.FC<GoalProps> = ({
             onDragOver={(e) => onDragOver(e, goal.id)}
             onDrop={(e) => onDrop(e, goal.id)}
         >
+            <div className={styles.menuContainer}>
+                <button
+                    className={styles.menuButton}
+                    onClick={() => setShowMenu(!showMenu)}
+                    aria-label="Menu"
+                >
+                    <BsThreeDotsVertical size={16} />
+                </button>
+                {showMenu && (
+                    <div className={styles.menuDropdown}>
             <button
-                className={styles.deleteButton}
+                            className={styles.menuItem}
                 onClick={handleDelete}
-                aria-label="Delete goal"
             >
-                <FaTrash size={12} />
+                            Delete
             </button>
+                    </div>
+                )}
+            </div>
 
             <div key={goal.id}>
                 <div className={styles.goalHeader}>
