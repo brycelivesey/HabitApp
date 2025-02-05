@@ -1,4 +1,4 @@
-import React, { useState, DragEvent } from 'react';
+import React, { useState, DragEvent, useEffect, useRef } from 'react';
 import styles from '../App.module.css';
 import { MdDragIndicator } from 'react-icons/md';
 import ActivityCalendar from './ActivityCalendar';
@@ -29,6 +29,20 @@ const Goal: React.FC<GoalProps> = ({
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
     const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setShowMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleYearSelect = (goalId: string, year: number | undefined) => {
         setSelectedYears(prev => ({
@@ -60,7 +74,7 @@ const Goal: React.FC<GoalProps> = ({
             onDragOver={(e) => onDragOver(e, goal.id)}
             onDrop={(e) => onDrop(e, goal.id)}
         >
-            <div className={styles.menuContainer}>
+            <div className={styles.menuContainer} ref={menuRef}>
                 <button
                     className={styles.menuButton}
                     onClick={() => setShowMenu(!showMenu)}
