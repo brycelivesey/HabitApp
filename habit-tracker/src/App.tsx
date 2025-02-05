@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, DragEvent } from 'react';
 import styles from './App.module.css';
 import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
@@ -21,6 +21,7 @@ const App: React.FC = () => {
     return [];
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -31,7 +32,8 @@ const App: React.FC = () => {
   }, [goals]);
 
   const handleAddGoal = (newGoal: DailyGoal) => {
-    setGoals(prev => [...prev, newGoal]);
+    const maxOrder = Math.max(0, ...goals.map(g => g.order));
+    setGoals(prev => [...prev, { ...newGoal, order: maxOrder + 1 }]);
     setIsModalOpen(false);
   };
 
@@ -39,7 +41,76 @@ const App: React.FC = () => {
     const updatedGoals = goals.filter(goal => goal.id !== goalId);
     setGoals(updatedGoals);
     localStorage.setItem('goals', JSON.stringify(updatedGoals));
-};
+  };
+
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, goalId: string) => {
+    e.dataTransfer.setData('text/plain', goalId);
+    setDraggedId(goalId);
+    (e.target as HTMLDivElement).classList.add(styles.dragging);
+  };
+
+  const handleDragEnd = (e: DragEvent<HTMLDivElement>) => {
+    (e.target as HTMLDivElement).classList.remove(styles.dragging);
+    setDraggedId(null);
+    document.querySelectorAll(`.${styles.goalCard}`).forEach(card => {
+      card.classList.remove(styles.dragBefore, styles.dragAfter);
+    });
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, goalId: string) => {
+    e.preventDefault();
+
+    if (draggedId === goalId) return;
+
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const mouseY = e.clientY;
+    const threshold = rect.top + rect.height / 2;
+
+    // Remove existing placement classes
+    target.classList.remove(styles.dragAfter, styles.dragBefore);
+
+    // Add appropriate placement class
+    if (mouseY > threshold) {
+      target.classList.add(styles.dragAfter);
+    } else {
+      target.classList.add(styles.dragBefore);
+    }
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, targetGoalId: string) => {
+    e.preventDefault();
+    const draggedGoalId = e.dataTransfer.getData('text/plain');
+
+    if (draggedGoalId === targetGoalId) return;
+
+    const draggedGoal = goals.find(g => g.id === draggedGoalId);
+    const targetGoal = goals.find(g => g.id === targetGoalId);
+
+    if (!draggedGoal || !targetGoal) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseY = e.clientY;
+    const threshold = rect.top + rect.height / 2;
+    const insertAfter = mouseY > threshold;
+
+    setGoals(prev => {
+      const newGoals = prev.filter(g => g.id !== draggedGoalId);
+      const targetIndex = newGoals.findIndex(g => g.id === targetGoalId);
+      const insertIndex = insertAfter ? targetIndex + 1 : targetIndex;
+
+      newGoals.splice(insertIndex, 0, draggedGoal);
+
+      // Reassign orders based on new positions
+      return newGoals.map((goal, index) => ({
+        ...goal,
+        order: index
+      }));
+    });
+
+    // Remove placement classes
+    e.currentTarget.classList.remove(styles.dragAfter, styles.dragBefore);
+  };
 
   const handleComplete = (goalId: string) => {
     const today = new Date().toISOString().split('T')[0];
@@ -72,12 +143,16 @@ const App: React.FC = () => {
 
       <div className={styles.goalsList}>
         {goals.map(goal => (
-           <Goal 
-           key={goal.id} 
-           goal={goal} 
-           onDelete={handleDeleteGoal}
-           handleComplete={handleComplete}
-       />
+          <Goal
+            key={goal.id}
+            goal={goal}
+            onDelete={handleDeleteGoal}
+            handleComplete={handleComplete}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          />
         ))}
       </div>
 

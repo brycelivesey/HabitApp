@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, DragEvent } from 'react';
 import styles from '../App.module.css';
 import { FaTrash } from 'react-icons/fa';
+import { MdDragIndicator } from 'react-icons/md';
 import ActivityCalendar from './ActivityCalendar';
 import { DailyGoal } from '../types';
 
@@ -8,9 +9,21 @@ interface GoalProps {
     goal: DailyGoal;
     onDelete: (goalId: string) => void;
     handleComplete: (goalId: string) => void;
+    onDragStart: (e: DragEvent<HTMLDivElement>, goalId: string) => void;
+    onDragEnd: (e: DragEvent<HTMLDivElement>) => void;
+    onDragOver: (e: DragEvent<HTMLDivElement>, goalId: string) => void;
+    onDrop: (e: DragEvent<HTMLDivElement>, goalId: string) => void
 }
 
-const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
+const Goal: React.FC<GoalProps> = ({
+    goal,
+    onDelete,
+    handleComplete,
+    onDragStart,
+    onDragEnd,
+    onDragOver,
+    onDrop
+}) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
 
@@ -31,7 +44,14 @@ const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
     };
 
     return (
-        <div className={styles.goalCard}>
+        <div
+            className={styles.goalCard}
+            draggable
+            onDragStart={(e) => onDragStart(e, goal.id)}
+            onDragEnd={onDragEnd}
+            onDragOver={(e) => onDragOver(e, goal.id)}
+            onDrop={(e) => onDrop(e, goal.id)}
+        >
             <button
                 className={styles.deleteButton}
                 onClick={handleDelete}
@@ -41,7 +61,10 @@ const Goal: React.FC<GoalProps> = ({ goal, onDelete, handleComplete }) => {
             </button>
 
             <div key={goal.id}>
-                <h3>{goal.title}</h3>
+                <div className={styles.goalHeader}>
+                    <h3>{goal.title}</h3>
+                    <MdDragIndicator className={styles.dragHandle} size={28} />
+                </div>
                 <ActivityCalendar
                     activityLog={goal.activityLog}
                     color={goal.color}

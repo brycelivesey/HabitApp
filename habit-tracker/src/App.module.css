@@ -50,12 +50,18 @@ body {
 }
 
 .goalsList {
-    width: 100%;
-    max-width: 850px;
-    display: grid;
-    gap: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
+.dragBefore {
+    border-top: 2px solid var(--text-color);
+}
+
+.dragAfter {
+    border-bottom: 2px solid var(--text-color);
+}
 
 .goalCard {
     position: relative;
@@ -71,6 +77,30 @@ body {
     align-items: flex-start;
     margin-top: 16px;
     width: 100%;
+}
+
+.goalHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.dragHandle {
+    cursor: grab;
+    color: var(--border-color);
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.dragHandle:hover {
+    background: var(--button-hover);
+    color: var(--text-color);
+}
+
+.goalCard.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
 }
 
 .taskList {

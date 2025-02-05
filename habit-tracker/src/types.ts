@@ -8,6 +8,7 @@ export interface DailyGoal {
     title: string;
     tasks: Task[];
     color: string;
+    order: number;
     activityLog: {
         [date: string]: number; // date in YYYY-MM-DD format, value is completion count
     };
