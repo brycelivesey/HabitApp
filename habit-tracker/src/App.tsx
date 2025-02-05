@@ -40,7 +40,7 @@ const App: React.FC = () => {
   const handleDeleteGoal = (goalId: string) => {
     const updatedGoals = goals.filter(goal => goal.id !== goalId);
     setGoals(updatedGoals);
-    localStorage.setItem('goals', JSON.stringify(updatedGoals));
+    localStorage.setItem('habitGoals', JSON.stringify(updatedGoals));
   };
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>, goalId: string) => {
@@ -113,7 +113,7 @@ const App: React.FC = () => {
   };
 
   const handleComplete = (goalId: string) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
 
     setGoals(prev => prev.map(goal => {
       if (goal.id === goalId) {

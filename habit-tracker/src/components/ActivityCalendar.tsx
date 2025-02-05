@@ -93,7 +93,7 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, color, year, onYearSel
                             const date = daysArray[weekIndex * 7 + dayOfWeek];
                             if (!date) return null;
 
-                            const dateStr = date.toISOString().split('T')[0];
+                            const dateStr = date.toLocaleDateString('en-CA');
                             if (year && date.getFullYear() !== year) {
                                 return <div key={dateStr} className={styles.day} style={{ visibility: 'hidden' }} />;
                             }
