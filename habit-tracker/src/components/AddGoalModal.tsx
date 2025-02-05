@@ -6,12 +6,15 @@ import { HexColorPicker } from 'react-colorful';
 interface Props {
     onClose: () => void;
     onSubmit: (goal: DailyGoal) => void;
+    goalToEdit?: DailyGoal;
 }
 
-const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
-    const [title, setTitle] = useState('');
-    const [tasks, setTasks] = useState<Task[]>([{ id: '1', name: '' }]);
-    const [selectedColor, setSelectedColor] = useState('#238636');
+const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit }) => {
+    const [title, setTitle] = useState(goalToEdit?.title || '');;
+    const [tasks, setTasks] = useState<Task[]>(
+        goalToEdit?.tasks || [{ id: '1', name: '' }]
+    );
+    const [selectedColor, setSelectedColor] = useState(goalToEdit?.color || '#238636');
     const [showColorPicker, setShowColorPicker] = useState(false);
 
     const handleAddTask = () => {
@@ -33,22 +36,23 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const newGoal: DailyGoal = {
-            id: crypto.randomUUID(),
+        const goalData: DailyGoal = {
+            id: goalToEdit?.id || crypto.randomUUID(),
             title,
             tasks: tasks.filter(task => task.name.trim() !== ''),
             color: selectedColor,
-            activityLog: {}
+            order: goalToEdit?.order || tasks.length + 1,
+            activityLog: goalToEdit?.activityLog || {},
         };
 
-        onSubmit(newGoal);
+        onSubmit(goalData);
     };
 
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modal}>
                 <div className={styles.modalHeader}>
-                    <h2>Create New Goal</h2>
+                    <h2>{goalToEdit ? 'Edit Goal' : 'Create New Goal'}</h2>
                     <button
                         className={styles.closeButton}
                         onClick={onClose}
@@ -79,12 +83,12 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
                                 />
                                 {showColorPicker && (
                                     <div className={styles.colorPickerPopover}>
-                                        <div 
+                                        <div
                                             className={styles.colorPickerCover}
                                             onClick={() => setShowColorPicker(false)}
                                         />
-                                        <HexColorPicker 
-                                            color={selectedColor} 
+                                        <HexColorPicker
+                                            color={selectedColor}
                                             onChange={setSelectedColor}
                                         />
                                     </div>
@@ -136,7 +140,7 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit }) => {
                             className={styles.submitButton}
                             disabled={!title.trim()}
                         >
-                            Create Goal
+                            {goalToEdit ? 'Save Changes' : 'Create Goal'}
                         </button>
                     </div>
                 </form>

@@ -8,6 +8,7 @@ import { BsThreeDotsVertical } from 'react-icons/bs';
 interface GoalProps {
     goal: DailyGoal;
     onDelete: (goalId: string) => void;
+    onEdit: (goal: DailyGoal) => void;
     handleComplete: (goalId: string) => void;
     onDragStart: (e: DragEvent<HTMLDivElement>, goalId: string) => void;
     onDragEnd: (e: DragEvent<HTMLDivElement>) => void;
@@ -18,6 +19,7 @@ interface GoalProps {
 const Goal: React.FC<GoalProps> = ({
     goal,
     onDelete,
+    onEdit,
     handleComplete,
     onDragStart,
     onDragEnd,
@@ -33,6 +35,11 @@ const Goal: React.FC<GoalProps> = ({
             ...prev,
             [goalId]: year
         }));
+    };
+
+    const handleEdit = () => {
+        onEdit(goal);
+        setShowMenu(false);
     };
 
     const handleDelete = () => {
@@ -63,12 +70,18 @@ const Goal: React.FC<GoalProps> = ({
                 </button>
                 {showMenu && (
                     <div className={styles.menuDropdown}>
-            <button
+                        <button
                             className={styles.menuItem}
-                onClick={handleDelete}
-            >
+                            onClick={handleEdit}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className={styles.menuItem}
+                            onClick={handleDelete}
+                        >
                             Delete
-            </button>
+                        </button>
                     </div>
                 )}
             </div>

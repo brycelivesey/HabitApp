@@ -22,6 +22,7 @@ const App: React.FC = () => {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [goalToEdit, setGoalToEdit] = useState<DailyGoal | undefined>(undefined);
 
   useEffect(() => {
     try {
@@ -37,10 +38,28 @@ const App: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleEditGoal = (updatedGoal: DailyGoal) => {
+    setGoals(prev => prev.map(goal =>
+      goal.id === updatedGoal.id ? updatedGoal : goal
+    ));
+    setIsModalOpen(false);
+    setGoalToEdit(undefined);
+  };
+
   const handleDeleteGoal = (goalId: string) => {
     const updatedGoals = goals.filter(goal => goal.id !== goalId);
     setGoals(updatedGoals);
     localStorage.setItem('habitGoals', JSON.stringify(updatedGoals));
+  };
+
+  const handleStartEdit = (goal: DailyGoal) => {
+    setGoalToEdit(goal);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setGoalToEdit(undefined);
   };
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>, goalId: string) => {
@@ -147,6 +166,7 @@ const App: React.FC = () => {
             key={goal.id}
             goal={goal}
             onDelete={handleDeleteGoal}
+            onEdit={handleStartEdit}
             handleComplete={handleComplete}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -158,8 +178,9 @@ const App: React.FC = () => {
 
       {isModalOpen && (
         <AddGoalModal
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleAddGoal}
+          onClose={handleCloseModal}
+          onSubmit={goalToEdit ? handleEditGoal : handleAddGoal}
+          goalToEdit={goalToEdit}
         />
       )}
     </div>
