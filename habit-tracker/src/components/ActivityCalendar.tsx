@@ -14,11 +14,6 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, color, year, onYearSel
     const currentYear = new Date().getFullYear();
     const years = [currentYear, currentYear - 1, currentYear - 2];
 
-    const getColorClass = useCallback((count: number) => {
-        if (count === 0) return styles.dayEmpty;
-        return styles.dayFilled;
-    }, []);
-
     const getOpacity = useCallback((count: number) => {
         if (count === 0) return 1;
         return Math.min((count / 5) * 100, 100) / 100;
@@ -113,10 +108,11 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, color, year, onYearSel
                             return (
                                 <div
                                     key={dateStr}
-                                    className={`${styles.day} ${getColorClass(count)}`}
+                                    className={styles.day}
                                     style={{
                                         opacity: getOpacity(count),
-                                        backgroundColor: count > 0 ? color : undefined
+                                        backgroundColor: count > 0 ? color : '#161b22',
+                                        border: count > 0 ? 'none' : '1px solid #2d333b'
                                     }}
                                     title={`${count} contributions on ${formattedDate}`}
                                     role="tooltip"
@@ -128,7 +124,7 @@ const ActivityCalendar: React.FC<Props> = ({ activityLog, color, year, onYearSel
                 ))}
             </div>
         </div>
-    ), [daysArray, totalWeeks, year, activityLog, getColorClass, getOpacity]);
+    ), [daysArray, totalWeeks, year, activityLog, getOpacity, color]);
 
     return (
         <div className={styles.calendarContainer}>

@@ -17,17 +17,8 @@
     border-radius: 2px;
 }
 
-.dayEmpty {
-    background-color: #161b22;
-    border: 1px solid #2d333b;
-}
-
-.dayFilled {
-    background-color: #238636;
-}
-
 .day:hover {
-    border: 1px solid #3fb950;
+    border: 1px solid #c9d1d9 !important;
 }
 
 .calendarContainer {
