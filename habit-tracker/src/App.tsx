@@ -1,4 +1,4 @@
-import React, { useState, useEffect, DragEvent } from 'react';
+import React, { useState, useEffect, DragEvent, useRef } from 'react';
 import styles from './App.module.css';
 import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
@@ -23,13 +23,16 @@ const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [goalToEdit, setGoalToEdit] = useState<DailyGoal | undefined>(undefined);
+  const initialRender = useRef(true);
+
 
   useEffect(() => {
-    try {
-      localStorage.setItem('habitGoals', JSON.stringify(goals));
-    } catch (error) {
-      console.error('Error saving goals to localStorage:', error);
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
     }
+    
+    localStorage.setItem('habitGoals', JSON.stringify(goals));
   }, [goals]);
 
   const handleAddGoal = (newGoal: DailyGoal) => {
@@ -39,9 +42,10 @@ const App: React.FC = () => {
   };
 
   const handleEditGoal = (updatedGoal: DailyGoal) => {
-    setGoals(prev => prev.map(goal =>
+    const updatedGoals = goals.map(goal =>
       goal.id === updatedGoal.id ? updatedGoal : goal
-    ));
+    );
+    setGoals(updatedGoals);
     setIsModalOpen(false);
     setGoalToEdit(undefined);
   };
@@ -49,7 +53,6 @@ const App: React.FC = () => {
   const handleDeleteGoal = (goalId: string) => {
     const updatedGoals = goals.filter(goal => goal.id !== goalId);
     setGoals(updatedGoals);
-    localStorage.setItem('habitGoals', JSON.stringify(updatedGoals));
   };
 
   const handleStartEdit = (goal: DailyGoal) => {
