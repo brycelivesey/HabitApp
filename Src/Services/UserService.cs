@@ -1,11 +1,12 @@
 using Src.Models;
+using Src.Repositories;
 
 namespace Data.Services
 {
     public interface IUserService
     {
         Task<User> AuthenticateAsync(string email, string password);
-        Task<int> RegisterUserAsync(string email, string password);
+        Task<Guid> RegisterUserAsync(string email, string password);
     }
     public class UserService : IUserService
     {
@@ -33,7 +34,7 @@ namespace Data.Services
             return user;
         }
 
-        public async Task<int> RegisterUserAsync(string email, string password)
+        public async Task<Guid> RegisterUserAsync(string email, string password)
         {
             if (password.Length < 8)
             {
@@ -56,7 +57,7 @@ namespace Data.Services
             {
                 Email = email,
                 Password = hashedPassword,
-                Id = 
+                Id = new Guid()
             };
 
             return await _userRepository.CreateUserAsync(user);           

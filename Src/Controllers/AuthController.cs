@@ -53,11 +53,6 @@ namespace Src.Controllers
             {
                 return Conflict(new { error = e.Message });
             }
-            catch (Exception e)
-            {
-                // Log the unexpected error here
-                return StatusCode(500, new { error = "An unexpected error occurred" });
-            }
             
             var user = await _userService.AuthenticateAsync(request.Email, request.Password);
 

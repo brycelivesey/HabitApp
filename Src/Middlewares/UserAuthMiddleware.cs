@@ -22,14 +22,14 @@ namespace Main.Middleware
                 return;
             }
 
-            if (!int.TryParse(userIdClaim, out int userId) || userId <= 0)
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 await context.Response.WriteAsJsonAsync(new { error = "Invalid user format." });
                 return;
             }
 
-            context.Items["UserId"] = userId;
+            context.Items["userId"] = userId;
             await this.next(context);
         }
     }
