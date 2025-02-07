@@ -30,7 +30,6 @@ body {
 
 .header {
     width: 100%;
-    max-width: 850px;
     padding: 16px 0;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 24px;

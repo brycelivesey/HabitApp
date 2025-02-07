@@ -1,0 +1,27 @@
+﻿@using Src.Services
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment Environment
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="root"></div>
+
+@if (!Environment.IsDevelopment())
+{
+    <script type="module" src="http://localhost:5173/@@vite/client"></script>
+    <script type="module" src="http://localhost:5173/src/main.tsx"></script>
+}
+else
+{
+    var manifest = ManifestServices.GetManifestItem("index.html");
+    @if (manifest != null)
+    {
+        <script type="module" src="/@manifest.file"></script>
+        @foreach (var cssFile in manifest.css)
+        {
+            <link rel="stylesheet" href="/@cssFile">
+        }
+    }
+}
