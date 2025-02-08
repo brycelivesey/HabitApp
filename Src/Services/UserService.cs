@@ -66,7 +66,7 @@ namespace Src.Services
             {
                 Email = email,
                 Password = hashedPassword,
-                Id = new Guid()
+                Id = Guid.NewGuid()
             };
 
             return await _userRepository.CreateUserAsync(user);           

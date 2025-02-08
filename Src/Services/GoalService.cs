@@ -25,9 +25,9 @@ namespace Src.Services
         {
             foreach (var goalTask in goal.GoalTasks)
             {
-                goalTask.Id = new Guid();
+                goalTask.Id = Guid.NewGuid();
             }
-            goal.Id = new Guid();
+            goal.Id = Guid.NewGuid();
             goal.UserId = userId;
             return await _goalRepository.AddGoalAsync(goal);
         }
@@ -63,7 +63,7 @@ namespace Src.Services
             {
                 if (goalTask.Id == null || goalTask.Id == Guid.Empty)
                 {
-                    goalTask.Id = new Guid();
+                    goalTask.Id = Guid.NewGuid();
                 }
             }
             return await _goalRepository.UpdateGoalAsync(goal);
