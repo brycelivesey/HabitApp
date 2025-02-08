@@ -4,12 +4,20 @@ import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
 import Goal from './components/Goal';
 import { goalService } from './services/goal.service';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Login from './Login';
+import Register from './Register';
 
 const App: React.FC = () => {
   const [goals, setGoals] = useState<DailyGoal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [goalToEdit, setGoalToEdit] = useState<DailyGoal | undefined>(undefined);
+
+  const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+    const token = localStorage.getItem('token');
+    return token ? <>{children}</> : <Navigate to="/login" />;
+  };
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -32,11 +40,11 @@ const App: React.FC = () => {
       console.error('Error adding goal:', err);
     }
   };
-  
+
   const handleEditGoal = async (updatedGoal: DailyGoal) => {
     try {
       await goalService.updateGoal(updatedGoal);
-      setGoals(prev => prev.map(goal => 
+      setGoals(prev => prev.map(goal =>
         goal.id === updatedGoal.id ? updatedGoal : goal
       ));
       setIsModalOpen(false);
@@ -45,7 +53,7 @@ const App: React.FC = () => {
       console.error('Error updating goal:', err);
     }
   };
-  
+
   const handleDeleteGoal = async (goalId: string) => {
     try {
       await goalService.deleteGoal(goalId);
@@ -54,10 +62,10 @@ const App: React.FC = () => {
       console.error('Error deleting goal:', err);
     }
   };
-  
+
   const handleComplete = async (goalId: string) => {
     const today = new Date().toLocaleDateString('en-CA');
-    
+
     try {
       // Optimistically update UI
       setGoals(prev => prev.map(goal => {
@@ -73,7 +81,7 @@ const App: React.FC = () => {
         }
         return goal;
       }));
-  
+
       // Make API call
       await goalService.addContribution(goalId, today);
     } catch (err) {
@@ -164,40 +172,53 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <button
-          className={styles.addButton}
-          onClick={() => setIsModalOpen(true)}
-        >
-          + Add Goal
-        </button>
-      </header>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <div className={styles.container}>
+                <header className={styles.header}>
+                  <button
+                    className={styles.addButton}
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    + Add Goal
+                  </button>
+                </header>
 
-      <div className={styles.goalsList}>
-        {goals.map(goal => (
-          <Goal
-            key={goal.id}
-            goal={goal}
-            onDelete={handleDeleteGoal}
-            onEdit={handleStartEdit}
-            handleComplete={handleComplete}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          />
-        ))}
-      </div>
+                <div className={styles.goalsList}>
+                  {goals.map(goal => (
+                    <Goal
+                      key={goal.id}
+                      goal={goal}
+                      onDelete={handleDeleteGoal}
+                      onEdit={handleStartEdit}
+                      handleComplete={handleComplete}
+                      onDragStart={handleDragStart}
+                      onDragEnd={handleDragEnd}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                    />
+                  ))}
+                </div>
 
-      {isModalOpen && (
-        <AddGoalModal
-          onClose={handleCloseModal}
-          onSubmit={goalToEdit ? handleEditGoal : handleAddGoal}
-          goalToEdit={goalToEdit}
+                {isModalOpen && (
+                  <AddGoalModal
+                    onClose={handleCloseModal}
+                    onSubmit={goalToEdit ? handleEditGoal : handleAddGoal}
+                    goalToEdit={goalToEdit}
+                  />
+                )}
+              </div>
+            </PrivateRoute>
+          }
         />
-      )}
-    </div>
+      </Routes>
+    </BrowserRouter>
   );
 };
 

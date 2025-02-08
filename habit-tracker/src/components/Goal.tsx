@@ -113,7 +113,7 @@ const Goal: React.FC<GoalProps> = ({
                 />
                 <div className={styles.goalFooter}>
                     <ul className={styles.taskList}>
-                        {goal.tasks.map(task => (
+                        {goal.goalTasks.map(task => (
                             <li
                                 key={task.id}
                                 className={styles.taskItem}

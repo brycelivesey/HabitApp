@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Src.Models;
 
@@ -6,17 +7,17 @@ namespace Src.Repositories
     public interface IUserRepository
     {
         Task<User> GetUserByEmailAsync(string email);
-        Task<Guid> CreateUserAsync(User user); 
+        Task<Guid> CreateUserAsync(User user);
     }
 
     public class UserRepository : IUserRepository
     {
         private readonly IMongoCollection<User> _users;
 
-        public UserRepository(IConfiguration configuration)
+        public UserRepository(IOptions<MongoDbSettings> settings)
         {
-            var client = new MongoClient(configuration.GetConnectionString("MongoDB"));
-            var database = client.GetDatabase("GoalsDb");
+            var client = new MongoClient(settings.Value.ConnectionString);
+            var database = client.GetDatabase(settings.Value.Database);
             _users = database.GetCollection<User>("users");
         }
 
