@@ -24,7 +24,11 @@ export const goalService = {
     },
 
     async addGoal(goal: DailyGoal): Promise<string> {
-        const { data } = await api.post('/goals', goal);
+        const cleanedGoal = {
+            ...goal,
+            goalTasks: goal.goalTasks.map(({ id, isTemp, ...task }) => task)
+        };
+        const { data } = await api.post('/goals', cleanedGoal);
         return data;
     },
 

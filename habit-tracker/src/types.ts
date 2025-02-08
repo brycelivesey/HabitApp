@@ -1,10 +1,11 @@
 export interface GoalTask {
-    id?: string;
+    id: string;
     name: string;
+    isTemp?: boolean; // Optional flag to identify temp items
 }
 
 export interface DailyGoal {
-    id?: string;
+    id: string | null;
     title: string;
     goalTasks: GoalTask[];
     color: string;

@@ -7,18 +7,21 @@ interface Props {
     onClose: () => void;
     onSubmit: (goal: DailyGoal) => void;
     goalToEdit?: DailyGoal;
+    goalCount: number;
 }
 
-const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit }) => {
+const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit, goalCount }) => {
+    let nextTempId = -1;
     const [title, setTitle] = useState(goalToEdit?.title || '');;
     const [tasks, setTasks] = useState<GoalTask[]>(
-        goalToEdit?.goalTasks || [{ name: '' }]
+        goalToEdit?.goalTasks || [{ id: nextTempId.toString(), name: '' }]
     );
     const [selectedColor, setSelectedColor] = useState(goalToEdit?.color || '#238636');
     const [showColorPicker, setShowColorPicker] = useState(false);
 
     const handleAddTask = () => {
-        setTasks(prev => [...prev, { name: '' }]);
+        setTasks(prev => [...prev, { id: nextTempId.toString(), name: '', isTemp: true }]);
+        nextTempId--;
     };
 
     const handleRemoveTask = (id: string) => {
@@ -37,11 +40,11 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit }) => {
         e.preventDefault();
 
         const goalData: DailyGoal = {
-            id: goalToEdit?.id,
+            id: goalToEdit?.id || null,
             title,
             goalTasks: tasks.filter(task => task.name.trim() !== ''),
             color: selectedColor,
-            order: goalToEdit?.order || tasks.length + 1,
+            order: goalToEdit?.order || goalCount + 1,
             activityLog: goalToEdit?.activityLog || {},
         };
 

@@ -211,6 +211,7 @@ const App: React.FC = () => {
                     onClose={handleCloseModal}
                     onSubmit={goalToEdit ? handleEditGoal : handleAddGoal}
                     goalToEdit={goalToEdit}
+                    goalCount={goals.length}
                   />
                 )}
               </div>
