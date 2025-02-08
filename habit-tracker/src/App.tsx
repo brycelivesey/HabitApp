@@ -1,58 +1,87 @@
-import React, { useState, useEffect, DragEvent, useRef } from 'react';
+import React, { useState, useEffect, DragEvent } from 'react';
 import styles from './App.module.css';
 import AddGoalModal from './components/AddGoalModal';
 import { DailyGoal } from './types';
 import Goal from './components/Goal';
+import { goalService } from './services/goal.service';
 
 const App: React.FC = () => {
-  const [goals, setGoals] = useState<DailyGoal[]>(() => {
-    const savedGoals = localStorage.getItem('habitGoals');
-    if (savedGoals) {
-      try {
-        const parsedGoals = JSON.parse(savedGoals);
-        if (Array.isArray(parsedGoals)) {
-          return parsedGoals;
-        }
-      } catch (error) {
-        console.error('Error parsing goals from localStorage:', error);
-        localStorage.removeItem('habitGoals');
-      }
-    }
-    return [];
-  });
+  const [goals, setGoals] = useState<DailyGoal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [goalToEdit, setGoalToEdit] = useState<DailyGoal | undefined>(undefined);
-  const initialRender = useRef(true);
-
 
   useEffect(() => {
-    if (initialRender.current) {
-      initialRender.current = false;
-      return;
+    const fetchGoals = async () => {
+      try {
+        const data = await goalService.getGoals();
+        setGoals(data);
+      } catch (err) {
+        console.error('Error fetching goals:', err);
+      }
+    };
+    fetchGoals();
+  }, []);
+
+  const handleAddGoal = async (newGoal: DailyGoal) => {
+    try {
+      const goalId = await goalService.addGoal(newGoal);
+      setGoals(prev => [...prev, { ...newGoal, id: goalId }]);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error adding goal:', err);
     }
+  };
+  
+  const handleEditGoal = async (updatedGoal: DailyGoal) => {
+    try {
+      await goalService.updateGoal(updatedGoal);
+      setGoals(prev => prev.map(goal => 
+        goal.id === updatedGoal.id ? updatedGoal : goal
+      ));
+      setIsModalOpen(false);
+      setGoalToEdit(undefined);
+    } catch (err) {
+      console.error('Error updating goal:', err);
+    }
+  };
+  
+  const handleDeleteGoal = async (goalId: string) => {
+    try {
+      await goalService.deleteGoal(goalId);
+      setGoals(prev => prev.filter(goal => goal.id !== goalId));
+    } catch (err) {
+      console.error('Error deleting goal:', err);
+    }
+  };
+  
+  const handleComplete = async (goalId: string) => {
+    const today = new Date().toLocaleDateString('en-CA');
     
-    localStorage.setItem('habitGoals', JSON.stringify(goals));
-  }, [goals]);
-
-  const handleAddGoal = (newGoal: DailyGoal) => {
-    const maxOrder = Math.max(0, ...goals.map(g => g.order));
-    setGoals(prev => [...prev, { ...newGoal, order: maxOrder + 1 }]);
-    setIsModalOpen(false);
-  };
-
-  const handleEditGoal = (updatedGoal: DailyGoal) => {
-    const updatedGoals = goals.map(goal =>
-      goal.id === updatedGoal.id ? updatedGoal : goal
-    );
-    setGoals(updatedGoals);
-    setIsModalOpen(false);
-    setGoalToEdit(undefined);
-  };
-
-  const handleDeleteGoal = (goalId: string) => {
-    const updatedGoals = goals.filter(goal => goal.id !== goalId);
-    setGoals(updatedGoals);
+    try {
+      // Optimistically update UI
+      setGoals(prev => prev.map(goal => {
+        if (goal.id === goalId) {
+          const currentCount = goal.activityLog[today] || 0;
+          return {
+            ...goal,
+            activityLog: {
+              ...goal.activityLog,
+              [today]: currentCount + 1
+            }
+          };
+        }
+        return goal;
+      }));
+  
+      // Make API call
+      await goalService.addContribution(goalId, today);
+    } catch (err) {
+      console.error('Error adding contribution:', err);
+      // Revert optimistic update on error by fetching fresh data
+      const updatedGoals = await goalService.getGoals();
+      setGoals(updatedGoals);
+    }
   };
 
   const handleStartEdit = (goal: DailyGoal) => {
@@ -132,24 +161,6 @@ const App: React.FC = () => {
 
     // Remove placement classes
     e.currentTarget.classList.remove(styles.dragAfter, styles.dragBefore);
-  };
-
-  const handleComplete = (goalId: string) => {
-    const today = new Date().toLocaleDateString('en-CA');
-
-    setGoals(prev => prev.map(goal => {
-      if (goal.id === goalId) {
-        const currentCount = goal.activityLog[today] || 0;
-        return {
-          ...goal,
-          activityLog: {
-            ...goal.activityLog,
-            [today]: currentCount + 1
-          }
-        };
-      }
-      return goal;
-    }));
   };
 
   return (

@@ -23,6 +23,10 @@ namespace Src.Services
 
         public async Task<Guid> AddGoalAsync(Guid userId, DailyGoal goal)
         {
+            foreach (var goalTask in goal.GoalTasks)
+            {
+                goalTask.Id = new Guid();
+            }
             goal.Id = new Guid();
             goal.UserId = userId;
             return await _goalRepository.AddGoalAsync(goal);

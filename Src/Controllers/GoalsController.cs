@@ -16,7 +16,7 @@ namespace Src.Controllers
         }
 
         [HttpPost("goals")]
-        public async Task<ActionResult<DailyGoal>> AddGoal([FromBody] DailyGoal goal)
+        public async Task<ActionResult<Guid>> AddGoal([FromBody] DailyGoal goal)
         {
             try 
             {
@@ -30,7 +30,7 @@ namespace Src.Controllers
         }
 
         [HttpDelete("goals/{id}")]
-        public async Task<ActionResult> DeleteGoal(Guid id)
+        public async Task<ActionResult<Guid>> DeleteGoal(Guid id)
         {
             try 
             {
@@ -43,8 +43,8 @@ namespace Src.Controllers
             }
         }
 
-        [HttpPut("goals/{id}")]
-        public async Task<ActionResult<DailyGoal>> EditGoal([FromBody] DailyGoal goal)
+        [HttpPut("goals")]
+        public async Task<ActionResult<Guid>> EditGoal([FromBody] DailyGoal goal)
         {
             try 
             {
@@ -58,7 +58,7 @@ namespace Src.Controllers
         }
 
         [HttpPost("goals/{id}/contributions")]
-        public async Task<ActionResult<DailyGoal>> AddContribution(Guid id, [FromBody] string date)
+        public async Task<ActionResult<Guid>> AddContribution(Guid id, [FromBody] string date)
         {
             try 
             {
