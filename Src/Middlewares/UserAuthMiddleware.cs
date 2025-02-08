@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Main.Middleware
+namespace Src.Middleware
 {
     public class UserAuthMiddleware
     {

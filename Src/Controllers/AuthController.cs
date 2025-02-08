@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
-using Data.Services;
+using Src.Services;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Src.Services;
 
 namespace Src.Controllers
 {
     [ApiController]
-    [Route("Auth")]
+    [Route("auth")]
     public class AuthController : ControllerBase
     {
         private readonly IJwtService _jwtService;
@@ -19,7 +18,7 @@ namespace Src.Controllers
             _userService = userService;
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)
@@ -38,7 +37,7 @@ namespace Src.Controllers
             return Ok(new { token });
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {            
             try

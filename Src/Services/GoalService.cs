@@ -23,7 +23,7 @@ namespace Src.Services
 
         public async Task<Guid> AddGoalAsync(Guid userId, DailyGoal goal)
         {
-            goal.Id = new Guid();
+            goal.Id = Guid.NewGuid();
             goal.UserId = userId;
             return await _goalRepository.AddGoalAsync(goal);
         }
@@ -35,6 +35,9 @@ namespace Src.Services
         public async Task<Guid?> UpdateGoalAsync(Guid userId, DailyGoal goal)
         {
             await this.GetGoalAsync(userId, goal.Id); // check for access
+
+            goal.UserId = userId;
+                
             return await _goalRepository.UpdateGoalAsync(goal);
         }
         public async Task<Guid?> AddContributionAsync(Guid userId, Guid id, string date)

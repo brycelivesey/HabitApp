@@ -1,12 +1,12 @@
-export interface Task {
-    id: string;
+export interface GoalTask {
+    id: number;
     name: string;
 }
 
 export interface DailyGoal {
     id: string;
     title: string;
-    tasks: Task[];
+    goalTasks: GoalTask[];
     color: string;
     order: number;
     activityLog: {

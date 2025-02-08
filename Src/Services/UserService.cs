@@ -1,7 +1,7 @@
 using Src.Models;
 using Src.Repositories;
 
-namespace Data.Services
+namespace Src.Services
 {
     public interface IUserService
     {
@@ -36,6 +36,15 @@ namespace Data.Services
 
         public async Task<Guid> RegisterUserAsync(string email, string password)
         {
+            var emailParts = email.Split('@');
+            if (emailParts.Length != 2 || string.IsNullOrWhiteSpace(emailParts[0]) || string.IsNullOrWhiteSpace(emailParts[1]))
+            {
+                throw new ArgumentException("Invalid email format.");
+            }
+            if (email.Length > 254)
+            {
+                throw new ArgumentException("Email cannot exceed 254 characters.");
+            }
             if (password.Length < 8)
             {
                 throw new ArgumentException("Password must be at least 8 characters long.");
@@ -57,7 +66,7 @@ namespace Data.Services
             {
                 Email = email,
                 Password = hashedPassword,
-                Id = new Guid()
+                Id = Guid.NewGuid()
             };
 
             return await _userRepository.CreateUserAsync(user);           

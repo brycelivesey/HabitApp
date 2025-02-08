@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DailyGoal, Task } from '../types';
+import { DailyGoal, GoalTask } from '../types';
 import styles from './AddGoalModal.module.css';
 import { HexColorPicker } from 'react-colorful';
 
@@ -7,25 +7,26 @@ interface Props {
     onClose: () => void;
     onSubmit: (goal: DailyGoal) => void;
     goalToEdit?: DailyGoal;
+    goalCount: number;
 }
 
-const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit }) => {
+const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit, goalCount }) => {
     const [title, setTitle] = useState(goalToEdit?.title || '');;
-    const [tasks, setTasks] = useState<Task[]>(
-        goalToEdit?.tasks || [{ id: '1', name: '' }]
+    const [tasks, setTasks] = useState<GoalTask[]>(
+        goalToEdit?.goalTasks || [{ id: 1, name: '' }]
     );
     const [selectedColor, setSelectedColor] = useState(goalToEdit?.color || '#238636');
     const [showColorPicker, setShowColorPicker] = useState(false);
 
     const handleAddTask = () => {
-        setTasks(prev => [...prev, { id: crypto.randomUUID(), name: '' }]);
+        setTasks(prev => [...prev, { id: tasks[tasks.length - 1].id + 1, name: '' }]);
     };
 
-    const handleRemoveTask = (id: string) => {
+    const handleRemoveTask = (id: number) => {
         setTasks(prev => prev.filter(task => task.id !== id));
     };
 
-    const handleTaskChange = (id: string, value: string) => {
+    const handleTaskChange = (id: number, value: string) => {
         setTasks(prev =>
             prev.map(task =>
                 task.id === id ? { ...task, name: value } : task
@@ -37,11 +38,11 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit }) => {
         e.preventDefault();
 
         const goalData: DailyGoal = {
-            id: goalToEdit?.id || crypto.randomUUID(),
+            id: goalToEdit?.id || "",
             title,
-            tasks: tasks.filter(task => task.name.trim() !== ''),
+            goalTasks: tasks.filter(task => task.name.trim() !== ''),
             color: selectedColor,
-            order: goalToEdit?.order || tasks.length + 1,
+            order: goalToEdit?.order || goalCount + 1,
             activityLog: goalToEdit?.activityLog || {},
         };
 

@@ -1,8 +1,9 @@
 using Src.Models;
 using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 
 namespace Src.Repositories
-{  
+{
     public interface IGoalRepository
     {
         Task<DailyGoal> GetGoalAsync(Guid id);
@@ -16,10 +17,10 @@ namespace Src.Repositories
     {
         private readonly IMongoCollection<DailyGoal> _goals;
 
-        public GoalRepository(IConfiguration configuration)
+        public GoalRepository(IOptions<MongoDbSettings> settings)
         {
-            var client = new MongoClient(configuration.GetConnectionString("MongoDB"));
-            var database = client.GetDatabase("GoalsDb");
+            var client = new MongoClient(settings.Value.ConnectionString);
+            var database = client.GetDatabase(settings.Value.Database);
             _goals = database.GetCollection<DailyGoal>("goals");
         }
 

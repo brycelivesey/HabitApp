@@ -40,4 +40,3 @@ Release/
 *.DotSettings.user
 .idea/
 *.sln.iml
-wwwroot/
