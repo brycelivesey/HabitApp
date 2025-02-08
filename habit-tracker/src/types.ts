@@ -5,7 +5,7 @@ export interface GoalTask {
 }
 
 export interface DailyGoal {
-    id: string | null;
+    id: string;
     title: string;
     goalTasks: GoalTask[];
     color: string;

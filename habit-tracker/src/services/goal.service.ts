@@ -2,45 +2,42 @@ import axios from 'axios';
 import { DailyGoal } from '../types';
 import { authService } from './auth.service';
 
-const api = axios.create({
-    baseURL: '/api',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-});
+const baseURL = '/api';
 
-api.interceptors.request.use(config => {
-    const token = authService.getToken();
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+const getHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authService.getToken()}`
 });
 
 export const goalService = {
     async getGoals(): Promise<DailyGoal[]> {
-        const { data } = await api.get('/goals');
+        const { data } = await axios.get(`${baseURL}/goals`, { headers: getHeaders() });
         return data;
     },
 
     async addGoal(goal: DailyGoal): Promise<string> {
+        const { id, ...goalWithoutId } = goal;
         const cleanedGoal = {
-            ...goal,
-            goalTasks: goal.goalTasks.map(({ id, isTemp, ...task }) => task)
+            ...goalWithoutId,
+            goalTasks: goalWithoutId.goalTasks.map(({ id, isTemp, ...task }) => task)
         };
-        const { data } = await api.post('/goals', cleanedGoal);
+        const { data } = await axios.post(`${baseURL}/goals`, cleanedGoal, { headers: getHeaders() });
         return data;
     },
 
     async updateGoal(goal: DailyGoal): Promise<void> {
-        await api.put('/goals', goal);
+        const cleanedGoal = {
+            ...goal,
+            goalTasks: goal.goalTasks.map(({ id, isTemp, ...task }) => isTemp ? task : { id, task })
+        };
+        await axios.put(`${baseURL}/goals`, cleanedGoal, { headers: getHeaders() });
     },
 
     async deleteGoal(goalId: string): Promise<void> {
-        await api.delete(`/goals/${goalId}`);
+        await axios.delete(`${baseURL}/goals/${goalId}`, { headers: getHeaders() });
     },
 
     async addContribution(goalId: string, date: string): Promise<void> {
-        await api.post(`/goals/${goalId}/contributions`, JSON.stringify(date));
+        await axios.post(`${baseURL}/goals/${goalId}/contributions`, JSON.stringify(date), { headers: getHeaders() });
     }
 };

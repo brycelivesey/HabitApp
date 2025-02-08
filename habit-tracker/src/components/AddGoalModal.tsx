@@ -40,7 +40,7 @@ const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit, goalCoun
         e.preventDefault();
 
         const goalData: DailyGoal = {
-            id: goalToEdit?.id || null,
+            id: goalToEdit?.id || "",
             title,
             goalTasks: tasks.filter(task => task.name.trim() !== ''),
             color: selectedColor,
