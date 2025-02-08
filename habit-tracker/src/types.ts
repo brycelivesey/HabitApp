@@ -1,7 +1,6 @@
 export interface GoalTask {
-    id: string;
+    id: number;
     name: string;
-    isTemp?: boolean; // Optional flag to identify temp items
 }
 
 export interface DailyGoal {

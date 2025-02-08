@@ -11,24 +11,22 @@ interface Props {
 }
 
 const AddGoalModal: React.FC<Props> = ({ onClose, onSubmit, goalToEdit, goalCount }) => {
-    let nextTempId = -1;
     const [title, setTitle] = useState(goalToEdit?.title || '');;
     const [tasks, setTasks] = useState<GoalTask[]>(
-        goalToEdit?.goalTasks || [{ id: nextTempId.toString(), name: '' }]
+        goalToEdit?.goalTasks || [{ id: 1, name: '' }]
     );
     const [selectedColor, setSelectedColor] = useState(goalToEdit?.color || '#238636');
     const [showColorPicker, setShowColorPicker] = useState(false);
 
     const handleAddTask = () => {
-        setTasks(prev => [...prev, { id: nextTempId.toString(), name: '', isTemp: true }]);
-        nextTempId--;
+        setTasks(prev => [...prev, { id: tasks[tasks.length - 1].id + 1, name: '' }]);
     };
 
-    const handleRemoveTask = (id: string) => {
+    const handleRemoveTask = (id: number) => {
         setTasks(prev => prev.filter(task => task.id !== id));
     };
 
-    const handleTaskChange = (id: string, value: string) => {
+    const handleTaskChange = (id: number, value: string) => {
         setTasks(prev =>
             prev.map(task =>
                 task.id === id ? { ...task, name: value } : task

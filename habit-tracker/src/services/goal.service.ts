@@ -17,20 +17,12 @@ export const goalService = {
 
     async addGoal(goal: DailyGoal): Promise<string> {
         const { id, ...goalWithoutId } = goal;
-        const cleanedGoal = {
-            ...goalWithoutId,
-            goalTasks: goalWithoutId.goalTasks.map(({ id, isTemp, ...task }) => task)
-        };
-        const { data } = await axios.post(`${baseURL}/goals`, cleanedGoal, { headers: getHeaders() });
+        const { data } = await axios.post(`${baseURL}/goals`, goalWithoutId, { headers: getHeaders() });
         return data;
     },
 
     async updateGoal(goal: DailyGoal): Promise<void> {
-        const cleanedGoal = {
-            ...goal,
-            goalTasks: goal.goalTasks.map(({ id, isTemp, ...task }) => isTemp ? task : { id, task })
-        };
-        await axios.put(`${baseURL}/goals`, cleanedGoal, { headers: getHeaders() });
+        await axios.put(`${baseURL}/goals`, goal, { headers: getHeaders() });
     },
 
     async deleteGoal(goalId: string): Promise<void> {

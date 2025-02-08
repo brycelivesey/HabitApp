@@ -23,10 +23,6 @@ namespace Src.Services
 
         public async Task<Guid> AddGoalAsync(Guid userId, DailyGoal goal)
         {
-            foreach (var goalTask in goal.GoalTasks)
-            {
-                goalTask.Id = Guid.NewGuid();
-            }
             goal.Id = Guid.NewGuid();
             goal.UserId = userId;
             return await _goalRepository.AddGoalAsync(goal);
@@ -38,34 +34,10 @@ namespace Src.Services
         }
         public async Task<Guid?> UpdateGoalAsync(Guid userId, DailyGoal goal)
         {
-            var storedGoal = await this.GetGoalAsync(userId, goal.Id); // check for access
-                     
-            if (goal.GoalTasks != null)
-            {
-                var storedTaskIds = storedGoal.GoalTasks
-                    .Select(t => t.Id)
-                    .ToHashSet();
+            await this.GetGoalAsync(userId, goal.Id); // check for access
 
-                var passedTaskIds = goal.GoalTasks
-                    .Where(t => t != null && t.Id != Guid.Empty)
-                    .Select(t => t.Id);
-                    
-                // Check if any passed task ID is not in stored tasks
-                // or appears multiple times in passed tasks
-                if (passedTaskIds.Any(id => !storedTaskIds.Contains(id)) || 
-                    passedTaskIds.GroupBy(id => id).Any(g => g.Count() > 1))
-                {
-                    throw new InvalidOperationException("Invalid goal tasks: Tasks must exist and appear exactly once");
-                }
-            }
-
-            foreach (var goalTask in goal.GoalTasks)
-            {
-                if (goalTask.Id == null || goalTask.Id == Guid.Empty)
-                {
-                    goalTask.Id = Guid.NewGuid();
-                }
-            }
+            goal.UserId = userId;
+                
             return await _goalRepository.UpdateGoalAsync(goal);
         }
         public async Task<Guid?> AddContributionAsync(Guid userId, Guid id, string date)

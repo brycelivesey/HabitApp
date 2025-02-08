@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './register.module.css';
-import { authService } from './services/auth.service';
+import { authService } from '../services/auth.service';
 
 interface RegisterCredentials {
     email: string;

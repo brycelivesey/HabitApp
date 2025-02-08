@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './login.module.css';
-import { authService } from './services/auth.service';
+import { authService } from '../services/auth.service';
 
 interface LoginCredentials {
     email: string;
