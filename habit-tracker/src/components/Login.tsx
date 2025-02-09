@@ -30,7 +30,7 @@ const Login = () => {
     
         try {
           await authService.login(credentials);
-          navigate('/');
+          navigate('/', { state: { justLoggedIn: true } });
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Login failed');
         }

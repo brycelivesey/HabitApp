@@ -7,6 +7,7 @@ namespace Src.Repositories
     public interface IUserRepository
     {
         Task<User> GetUserByEmailAsync(string email);
+        Task<User> GetUserByIdAsync(Guid id);
         Task<Guid> CreateUserAsync(User user);
     }
 
@@ -30,6 +31,12 @@ namespace Src.Repositories
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+            return await _users.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserByIdAsync(Guid id)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, id);
             return await _users.Find(filter).FirstOrDefaultAsync();
         }
     }

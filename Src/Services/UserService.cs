@@ -7,6 +7,7 @@ namespace Src.Services
     {
         Task<User> AuthenticateAsync(string email, string password);
         Task<Guid> RegisterUserAsync(string email, string password);
+        Task<User> GetUserByIdAsync(Guid id);
     }
     public class UserService : IUserService
     {
@@ -32,6 +33,11 @@ namespace Src.Services
             }
 
             return user;
+        }
+
+        public async Task<User> GetUserByIdAsync(Guid id)
+        {
+            return await _userRepository.GetUserByIdAsync(id);
         }
 
         public async Task<Guid> RegisterUserAsync(string email, string password)

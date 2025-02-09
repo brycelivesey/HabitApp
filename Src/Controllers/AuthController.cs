@@ -32,14 +32,17 @@ namespace Src.Controllers
             {
                 return Unauthorized("Invalid Credentials.");
             }
-            
+
             var token = _jwtService.CreateToken(user);
+            var refreshToken = _jwtService.CreateRefreshToken();
+            
+            this.SetRefreshToken(refreshToken);
             return Ok(new { token });
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
-        {            
+        {
             try
             {
                 await _userService.RegisterUserAsync(request.Email, request.Password);
@@ -52,7 +55,7 @@ namespace Src.Controllers
             {
                 return Conflict(new { error = e.Message });
             }
-            
+
             var user = await _userService.AuthenticateAsync(request.Email, request.Password);
 
             if (user == null)
@@ -61,8 +64,69 @@ namespace Src.Controllers
             }
 
             var token = _jwtService.CreateToken(user);
-
+            var refreshToken = _jwtService.CreateRefreshToken();
+            
+            this.SetRefreshToken(refreshToken);
             return Ok(new { userId = user.Id, token });
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized("No refresh token provided.");
+            }
+
+            try
+            {
+                var userId = HttpContext.Items["userId"].ToString();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized("Invalid token.");
+                }
+
+                var user = await _userService.GetUserByIdAsync(Guid.Parse(userId));
+                if (user == null)
+                {
+                    return Unauthorized("User not found.");
+                }
+
+                // Create new access token
+                var newAccessToken = _jwtService.CreateToken(user);
+                var newRefreshToken = _jwtService.CreateRefreshToken();
+
+                // Set refresh token in cookie
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                };
+                Response.Cookies.Append("refreshToken", newRefreshToken, cookieOptions);
+
+                return Ok(new { token = newAccessToken });
+            }
+            catch
+            {
+                return Unauthorized("Invalid refresh token.");
+            }
+        }
+
+        private void SetRefreshToken(string refreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+        }
+
     }
 }

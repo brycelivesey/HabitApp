@@ -3,33 +3,55 @@ import { DailyGoal } from '../types';
 import { authService } from './auth.service';
 
 const baseURL = '/api';
+const api = axios.create({
 
-const getHeaders = () => ({
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${authService.getToken()}`
+    baseURL,
+    headers: {
+        'Content-Type': 'application/json'
+    }
 });
 
 export const goalService = {
     async getGoals(): Promise<DailyGoal[]> {
-        const { data } = await axios.get(`${baseURL}/goals`, { headers: getHeaders() });
-        return data;
+        return authService.makeAuthenticatedRequest(async () => {
+            const { data } = await api.get('/goals', {
+                headers: { Authorization: `Bearer ${authService.getToken()}` }
+            });
+            return data;
+        });
     },
 
     async addGoal(goal: DailyGoal): Promise<string> {
         const { id, ...goalWithoutId } = goal;
-        const { data } = await axios.post(`${baseURL}/goals`, goalWithoutId, { headers: getHeaders() });
-        return data;
+        return authService.makeAuthenticatedRequest(async () => {
+            const { data } = await api.post('/goals', goalWithoutId, {
+                headers: { Authorization: `Bearer ${authService.getToken()}` }
+            });
+            return data;
+        });
     },
 
     async updateGoal(goal: DailyGoal): Promise<void> {
-        await axios.put(`${baseURL}/goals`, goal, { headers: getHeaders() });
+        return authService.makeAuthenticatedRequest(async () => {
+            await api.put('/goals', goal, {
+                headers: { Authorization: `Bearer ${authService.getToken()}` }
+            });
+        });
     },
 
     async deleteGoal(goalId: string): Promise<void> {
-        await axios.delete(`${baseURL}/goals/${goalId}`, { headers: getHeaders() });
+        return authService.makeAuthenticatedRequest(async () => {
+            await api.delete(`/goals/${goalId}`, {
+                headers: { Authorization: `Bearer ${authService.getToken()}` }
+            });
+        });
     },
 
     async addContribution(goalId: string, date: string): Promise<void> {
-        await axios.post(`${baseURL}/goals/${goalId}/contributions`, JSON.stringify(date), { headers: getHeaders() });
+        return authService.makeAuthenticatedRequest(async () => {
+            await api.post(`/goals/${goalId}/contributions`, JSON.stringify(date), {
+                headers: { Authorization: `Bearer ${authService.getToken()}` }
+            });
+        });
     }
 };

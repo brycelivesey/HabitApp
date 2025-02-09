@@ -63,7 +63,7 @@ app.UseAuthorization();
 
 app.MapFallbackToController("Index", "Home");
 
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api") || context.Request.Path == "/auth/refresh", appBuilder =>
     {
         appBuilder.UseMiddleware<UserAuthMiddleware>();
     });
