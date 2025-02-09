@@ -29,6 +29,7 @@ const Goal: React.FC<GoalProps> = ({
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectedYears, setSelectedYears] = useState<{ [goalId: string]: number | undefined }>({});
     const [showMenu, setShowMenu] = useState(false);
+    const [isDraggable, setIsDraggable] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -39,10 +40,20 @@ const Goal: React.FC<GoalProps> = ({
         };
 
         document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mouseup', handleDragHandleMouseUp);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mouseup', handleDragHandleMouseUp);
         };
     }, []);
+
+    const handleDragHandleMouseDown = () => {
+        setIsDraggable(true);
+    };
+
+    const handleDragHandleMouseUp = () => {
+        setIsDraggable(false);
+    };
 
     const handleYearSelect = (goalId: string, year: number | undefined) => {
         setSelectedYears(prev => ({
@@ -68,9 +79,12 @@ const Goal: React.FC<GoalProps> = ({
     return (
         <div
             className={styles.goalCard}
-            draggable
-            onDragStart={(e) => onDragStart(e, goal.id)}
-            onDragEnd={onDragEnd}
+            draggable={isDraggable}
+            onDragStart={(e) => isDraggable && onDragStart(e, goal.id)}
+            onDragEnd={(e) => {
+                onDragEnd(e);
+                setIsDraggable(false);
+            }}
             onDragOver={(e) => onDragOver(e, goal.id)}
             onDrop={(e) => onDrop(e, goal.id)}
         >
@@ -103,7 +117,10 @@ const Goal: React.FC<GoalProps> = ({
             <div key={goal.id}>
                 <div className={styles.goalHeader}>
                     <h3>{goal.title}</h3>
-                    <MdDragIndicator className={styles.dragHandle} size={28} />
+                    <MdDragIndicator
+                        className={styles.dragHandle}
+                        size={28}
+                        onMouseDown={handleDragHandleMouseDown} />
                 </div>
                 <ActivityCalendar
                     activityLog={goal.activityLog}
