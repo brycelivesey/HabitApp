@@ -10,6 +10,7 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [goalToEdit, setGoalToEdit] = useState<DailyGoal | undefined>(undefined);
+  let lastHoveredGoal: HTMLElement | null = null;
 
   useEffect(() => {
     const fetchGoals = async () => {
@@ -108,9 +109,13 @@ const Dashboard: React.FC = () => {
   const handleDragOver = (e: DragEvent<HTMLDivElement>, goalId: string) => {
     e.preventDefault();
 
+    const target = e.currentTarget;
+    if (lastHoveredGoal && lastHoveredGoal !== target) {
+      lastHoveredGoal.classList.remove(styles.dragAfter, styles.dragBefore);
+    }
+
     if (draggedId === goalId) return;
 
-    const target = e.currentTarget;
     const rect = target.getBoundingClientRect();
     const mouseY = e.clientY;
     const threshold = rect.top + rect.height / 2;
@@ -122,6 +127,8 @@ const Dashboard: React.FC = () => {
     } else {
       target.classList.add(styles.dragBefore);
     }
+
+    lastHoveredGoal = target;
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>, targetGoalId: string) => {
