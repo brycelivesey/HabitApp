@@ -60,6 +60,24 @@ namespace Src.Services
                 throw new ArgumentException("Password cannot exceed 64 characters long.");
             }
 
+            // Add password complexity requirements
+            if (!password.Any(char.IsUpper))
+            {
+                throw new ArgumentException("Password must contain at least one uppercase letter.");
+            }
+            if (!password.Any(char.IsLower))
+            {
+                throw new ArgumentException("Password must contain at least one lowercase letter.");
+            }
+            if (!password.Any(char.IsDigit))
+            {
+                throw new ArgumentException("Password must contain at least one number.");
+            }
+            if (!password.Any(ch => !char.IsLetterOrDigit(ch)))
+            {
+                throw new ArgumentException("Password must contain at least one special character.");
+            }
+
             var existingUser = await _userRepository.GetUserByEmailAsync(email);
             if (existingUser != null)
             {
