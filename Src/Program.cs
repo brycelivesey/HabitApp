@@ -1,11 +1,12 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
-using Src.Middleware;
+using Src.Authorization;
 using Src.Models;
 using Src.Repositories;
 using Src.Services;
@@ -28,6 +29,16 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IMongoDbInitializer, MongoDbInitializer>();
 
 builder.Services.AddSingleton<IJwtService, JwtService>();
+
+// Add Authorization with policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireUserAuth", policy =>
+        policy.Requirements.Add(new UserAuthRequirement()));
+});
+
+// Register the authorization handler
+builder.Services.AddScoped<IAuthorizationHandler, UserAuthHandler>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -97,11 +108,6 @@ app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapFallbackToController("Index", "Home");
-
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/api") || context.Request.Path == "/auth/refresh", appBuilder =>
-    {
-        appBuilder.UseMiddleware<UserAuthMiddleware>();
-    });
             
 app.MapControllerRoute(
     name: "default",

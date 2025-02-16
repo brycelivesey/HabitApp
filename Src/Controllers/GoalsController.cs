@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Src.Authorization;
 using Src.Models;
 using Src.Services;
 
 namespace Src.Controllers 
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
+    [RequireUserAuth]
     public class GoalsController : ControllerBase
     {
         private readonly IGoalService _goalService;

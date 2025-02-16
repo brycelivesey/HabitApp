@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Src.Services;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Src.Authorization;
 
 namespace Src.Controllers
 {
@@ -71,6 +72,7 @@ namespace Src.Controllers
         }
 
         [HttpPost("refresh")]
+        [RequireUserAuth]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
