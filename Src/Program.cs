@@ -14,13 +14,52 @@ using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+// Add environment variables as a configuration source
+builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+// Validate required configuration
+var mongoUser = builder.Configuration["MONGO_USER"] ?? throw new InvalidOperationException("MONGO_USER environment variable is not set");
+var mongoPassword = builder.Configuration["MONGO_PASSWORD"] ?? throw new InvalidOperationException("MONGO_PASSWORD environment variable is not set");
+var jwtSecret = builder.Configuration["JWT_SECRET"] ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set");
+
+// Configure MongoDB connection string from environment variables
+var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"]
+    ?.Replace("localhost", "habit-mongodb") // Use Docker service name
+    ?? "mongodb://habit-mongodb:27017";
+
+if (!string.IsNullOrEmpty(mongoUser) && !string.IsNullOrEmpty(mongoPassword))
+{
+    mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@habit-mongodb:27017";
+}
+
+// Use localhost for development environment
+if (builder.Environment.IsDevelopment())
+{
+    mongoConnectionString = mongoConnectionString.Replace("habit-mongodb", "localhost");
+}
+
+builder.Services.Configure<MongoDbSettings>(options =>
+{
+    options.ConnectionString = mongoConnectionString;
+    options.Database = builder.Configuration["MongoDB:Database"] ?? "GoalsDb";
+});
+
+// Configure JWT settings
+builder.Services.Configure<JwtSettings>(options =>
+{
+    options.Issuer = builder.Configuration["Jwt:Issuer"] ?? "habit-api";
+    options.Audience = builder.Configuration["Jwt:Audience"] ?? "habit-client";
+    options.Key = jwtSecret; // Use environment variable for JWT secret
+});
+
+var jwtSettings = new JwtSettings
+{
+    Issuer = builder.Configuration["Jwt:Issuer"] ?? "habit-api",
+    Audience = builder.Configuration["Jwt:Audience"] ?? "habit-client",
+    Key = jwtSecret
+};
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();

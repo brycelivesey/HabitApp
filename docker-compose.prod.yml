@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  habit-mongodb:
+    image: mongo
+    container_name: habit-mongodb
+    ports:
+      - "127.0.0.1:27017:27017"  # Only accessible locally
+    volumes:
+      - habit_mongodb_data:/data/db
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+          cpus: '1'
+        reservations:
+          memory: 512MB
+          cpus: '0.5'
+    networks:
+      - habit-network
+
+  habit-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: habit-tracker-api
+    restart: unless-stopped
+    depends_on:
+      - habit-mongodb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MongoDB__ConnectionString=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@habit-mongodb:27017
+      - JWT__Secret=${JWT_SECRET}
+    deploy:
+      resources:
+        limits:
+          memory: 512MB
+          cpus: '0.5'
+    networks:
+      - habit-network
+      - proxy-network
+
+  habit-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: habit-tracker-frontend
+    restart: unless-stopped
+    depends_on:
+      - habit-backend
+    networks:
+      - habit-network
+      - proxy-network
+
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'      # HTTP
+      - '443:443'    # HTTPS
+      - '81:81'      # Admin Web UI
+    volumes:
+      - npm_data:/data
+      - letsencrypt:/etc/letsencrypt
+    depends_on:
+      - habit-frontend
+      - habit-backend
+    networks:
+      - proxy-network
+
+  habit-backup:
+    image: mongo
+    volumes:
+      - habit_mongodb_data:/data/db:ro
+      - ./backups/habit-tracker:/backups
+    environment:
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      'while true; do
+        mongodump --uri="mongodb://$${MONGO_USER}:$${MONGO_PASSWORD}@habit-mongodb:27017" --out="/backups/backup-$$(date +%Y%m%d-%H%M%S)"
+        find /backups -type d -mtime +7 -exec rm -rf {} +
+        sleep 86400
+      done'
+    networks:
+      - habit-network
+
+networks:
+  habit-network:
+    name: habit-network
+  proxy-network:
+    name: proxy-network
+
+volumes:
+  habit_mongodb_data:
+  npm_data:
+  letsencrypt:

@@ -41,3 +41,8 @@ Release/
 .idea/
 *.sln.iml
 **/wwwroot/*
+
+# Environment Files
+.env
+.env.*
+!.env.example
