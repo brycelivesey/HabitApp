@@ -14,7 +14,9 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
-  <!-- Frontend build integration -->
+  <!-- For Docker builds, frontend is built separately so we remove the build integration steps -->
+  <!-- These targets are retained as comments for reference -->
+  <!-- 
   <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('../habit-tracker/node_modules')">
     <Exec Command="cd ../habit-tracker &amp; npm install" />
   </Target>
@@ -23,10 +25,10 @@
     <Exec Command="cd ../habit-tracker &amp; npm run build" />
   </Target>
 
-  <!-- For development, we can manually run the frontend with 'npm run dev' -->
   <Target Name="BuildFrontendDev" BeforeTargets="Build" Condition="'$(Configuration)' != 'Release' And !Exists('wwwroot/.vite')">
     <Message Importance="high" Text="To run the frontend in development mode, execute 'cd ../habit-tracker &amp; npm run dev' in a separate terminal" />
   </Target>
+  -->
 
   <!-- Ensure wwwroot directory exists and is included in publish -->
   <ItemGroup>
