@@ -14,4 +14,24 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
+  <!-- Frontend build integration -->
+  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('../habit-tracker/node_modules')">
+    <Exec Command="cd ../habit-tracker &amp; npm install" />
+  </Target>
+
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="cd ../habit-tracker &amp; npm run build" />
+  </Target>
+
+  <!-- For development, we can manually run the frontend with 'npm run dev' -->
+  <Target Name="BuildFrontendDev" BeforeTargets="Build" Condition="'$(Configuration)' != 'Release' And !Exists('wwwroot/.vite')">
+    <Message Importance="high" Text="To run the frontend in development mode, execute 'cd ../habit-tracker &amp; npm run dev' in a separate terminal" />
+  </Target>
+
+  <!-- Ensure wwwroot directory exists and is included in publish -->
+  <ItemGroup>
+    <Content Update="wwwroot/**" CopyToPublishDirectory="PreserveNewest" />
+    <Folder Include="wwwroot\" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -1,15 +1,29 @@
-# Build stage
+# Build stage - Backend and Frontend
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# Install Node.js for frontend build
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
+
 WORKDIR /src
 
-# Copy csproj and restore dependencies
-COPY ["Src/*.csproj", "./"]
-RUN dotnet restore
-
-# Copy the rest of the code
+# Copy frontend and backend source code
+COPY habit-tracker/ /habit-tracker/
 COPY Src/ .
 
-# Build the application
+# Restore backend dependencies
+RUN dotnet restore
+
+# Build frontend
+WORKDIR /habit-tracker
+RUN npm install
+RUN npm run build
+
+# Build backend
+WORKDIR /src
 RUN dotnet build -c Release -o /app/build
 
 # Publish stage
@@ -28,4 +42,4 @@ EXPOSE 5000
 ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "HabitTracker.dll"] 
+ENTRYPOINT ["dotnet", "Src.dll"] 
