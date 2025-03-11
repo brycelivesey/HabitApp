@@ -76,7 +76,7 @@ services:
     image: mongo
     volumes:
       - habit_mongodb_data:/data/db:ro
-      - ./backups/habit-tracker:/backups
+      - - /opt/habit-tracker/backups/habit-tracker:/backups
     environment:
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
