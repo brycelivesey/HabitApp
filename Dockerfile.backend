@@ -21,6 +21,7 @@ RUN dotnet restore
 WORKDIR /src/habit-tracker
 RUN npm install
 RUN npm run build
+# The frontend build should now be in /src/wwwroot
 
 # Build backend
 WORKDIR /src
@@ -29,6 +30,9 @@ RUN dotnet build -c Release -o /app/build
 # Publish stage
 FROM build AS publish
 RUN dotnet publish -c Release -o /app/publish
+# Make sure wwwroot exists and is copied to publish output
+RUN mkdir -p /app/publish/wwwroot
+RUN cp -r /src/wwwroot/* /app/publish/wwwroot/ || true
 
 # Final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
@@ -42,4 +46,4 @@ EXPOSE 5000
 ENV ASPNETCORE_URLS=http://+:5000
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-ENTRYPOINT ["dotnet", "Src.dll"] 
+ENTRYPOINT ["dotnet", "Src.dll"]
