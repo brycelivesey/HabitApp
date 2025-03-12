@@ -11,51 +11,23 @@ RUN apt-get update && \
 WORKDIR /src
 
 # Copy frontend and backend source code
-COPY habit-tracker/ /src/habit-tracker/
 COPY Src/ /src/
-
-# Create the wwwroot directory explicitly
-RUN mkdir -p /src/wwwroot
-
-# Restore backend dependencies
-RUN dotnet restore
 
 # Build frontend
 WORKDIR /src/habit-tracker
 RUN npm install
-# Add debugging to see where files are going
-RUN echo "Building frontend..."
 RUN npm run build
-RUN echo "Checking build output locations:"
-RUN ls -la /src
-RUN ls -la /src/wwwroot || echo "wwwroot directory is empty or does not exist in /src"
-RUN ls -la ../wwwroot || echo "../wwwroot directory is empty or does not exist"
-
-# Ensure the frontend build output is in the right place
-RUN cp -r ../wwwroot/* /src/wwwroot/ || echo "No files to copy from ../wwwroot"
 
 # Build backend
 WORKDIR /src
-RUN dotnet build -c Release -o /app/build
-
-# Publish stage
-FROM build AS publish
-# Create the wwwroot directory in the publish output
-RUN mkdir -p /app/publish/wwwroot
-# Copy frontend assets directly to publish output
-RUN cp -r /src/wwwroot/* /app/publish/wwwroot/ || echo "No files to copy from /src/wwwroot"
-# Publish the .NET application
-RUN dotnet publish -c Release -o /app/publish
+# Add property to avoid duplicate content items
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app/publish /p:EnableDefaultContentItems=false
 
 # Final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
-
-# Debug final image contents
-RUN echo "Contents of final image:"
-RUN ls -la /app
-RUN ls -la /app/wwwroot || echo "wwwroot directory is missing in final image"
+COPY --from=build /app/publish .
 
 # Expose port
 EXPOSE 5000

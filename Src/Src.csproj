@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Explicitly set the web root path -->
+    <WebRootPath>wwwroot</WebRootPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,8 +34,13 @@
 
   <!-- Ensure wwwroot directory exists and is included in publish -->
   <ItemGroup>
-    <Content Update="wwwroot/**" CopyToPublishDirectory="PreserveNewest" />
-    <Folder Include="wwwroot\" CopyToPublishDirectory="PreserveNewest" />
+    <!-- Include wwwroot folder and all its contents -->
+    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  
+  <!-- Make sure wwwroot folder exists even if empty -->
+  <Target Name="EnsureWwwrootExists" BeforeTargets="Publish">
+    <MakeDir Directories="$(WebRootPath)" Condition="!Exists('$(WebRootPath)')" />
+  </Target>
 
 </Project>
