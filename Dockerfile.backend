@@ -11,14 +11,14 @@ RUN apt-get update && \
 WORKDIR /src
 
 # Copy frontend and backend source code
-COPY habit-tracker/ /habit-tracker/
-COPY Src/ .
+COPY habit-tracker/ /src/habit-tracker/
+COPY Src/ /src/
 
 # Restore backend dependencies
 RUN dotnet restore
 
 # Build frontend
-WORKDIR /habit-tracker
+WORKDIR /src/habit-tracker
 RUN npm install
 RUN npm run build
 
