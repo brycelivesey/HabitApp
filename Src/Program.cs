@@ -136,6 +136,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+if (!Directory.Exists(app.Environment.WebRootPath))
+{
+    Directory.CreateDirectory(app.Environment.WebRootPath);
+}
 app.UseStaticFiles();
 
 app.UseRouting();

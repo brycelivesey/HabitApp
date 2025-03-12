@@ -1,7 +1,7 @@
-# Build stage - Backend and Frontend
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Install Node.js for frontend build
+# Install Node.js for frontend build (needed for MSBuild target)
 RUN apt-get update && \
     apt-get install -y curl && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -10,19 +10,12 @@ RUN apt-get update && \
 
 WORKDIR /src
 
-# Copy frontend and backend source code
+# Copy all source code
 COPY Src/ /src/
 
-# Build frontend
-WORKDIR /src/habit-tracker
-RUN npm install
-RUN npm run build
-
-# Build backend
-WORKDIR /src
-# Add property to avoid duplicate content items
+# Build and publish
 RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish /p:EnableDefaultContentItems=false
+RUN dotnet publish -c Release -o /app/publish
 
 # Final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

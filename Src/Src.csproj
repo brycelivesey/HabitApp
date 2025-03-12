@@ -16,31 +16,32 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
-  <!-- For Docker builds, frontend is built separately so we remove the build integration steps -->
-  <!-- These targets are retained as comments for reference -->
-  <!-- 
-  <Target Name="NpmInstall" BeforeTargets="Build" Condition="!Exists('../habit-tracker/node_modules')">
-    <Exec Command="cd ../habit-tracker &amp; npm install" />
-  </Target>
-
-  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Exec Command="cd ../habit-tracker &amp; npm run build" />
-  </Target>
-
-  <Target Name="BuildFrontendDev" BeforeTargets="Build" Condition="'$(Configuration)' != 'Release' And !Exists('wwwroot/.vite')">
-    <Message Importance="high" Text="To run the frontend in development mode, execute 'cd ../habit-tracker &amp; npm run dev' in a separate terminal" />
-  </Target>
-  -->
-
-  <!-- Ensure wwwroot directory exists and is included in publish -->
+  <PropertyGroup>
+    <SpaRoot>habit-tracker\</SpaRoot>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <!-- Include wwwroot folder and all its contents -->
-    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Remove="$(SpaRoot)**" />
+    <None Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
   
-  <!-- Make sure wwwroot folder exists even if empty -->
-  <Target Name="EnsureWwwrootExists" BeforeTargets="Publish">
-    <MakeDir Directories="$(WebRootPath)" Condition="!Exists('$(WebRootPath)')" />
+  <Target Name="PublishRunVite" AfterTargets="ComputeFilesToPublish">
+    <!-- Install dependencies -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <!-- Build the app with Vite -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    
+    <!-- Include the built files in publish output -->
+    <ItemGroup>
+      <!-- For Vite, the default output directory is 'dist' not 'build' -->
+      <DistFiles Include="$(SpaRoot)dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
   </Target>
 
 </Project>

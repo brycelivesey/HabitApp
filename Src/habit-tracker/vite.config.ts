@@ -5,9 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: '../wwwroot',
+    outDir: 'dist',
     emptyOutDir: true,
-    manifest: true
+    manifest: true,
+    // Might need these for .NET integration
+    assetsDir: '',
+    sourcemap: false
   },
   server: {
     cors: true,
