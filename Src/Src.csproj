@@ -10,39 +10,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Update="Views\**\*.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8" />
     <PackageReference Include="MongoDB.Driver" Version="3.1.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <SpaRoot>habit-tracker\</SpaRoot>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-  
-  <Target Name="PublishRunVite" AfterTargets="ComputeFilesToPublish">
-    <!-- Install dependencies -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <!-- Build the app with Vite -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
-    
-    <!-- Include the built files in publish output -->
-    <ItemGroup>
-      <!-- For Vite, the default output directory is 'dist' not 'build' -->
-      <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
 
 </Project>
