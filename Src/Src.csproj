@@ -13,7 +13,28 @@
     <Content Update="Views\**\*.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+
+    <!-- Frontend build configuration -->
+    <Content Remove="habit-tracker\**" />
+    <None Include="habit-tracker\**" />
   </ItemGroup>
+
+  <!-- Frontend build automation -->
+  <Target Name="BuildFrontend" BeforeTargets="Build">
+    <Exec WorkingDirectory="$(ProjectDir)habit-tracker" Command="npm install" />
+    <Exec WorkingDirectory="$(ProjectDir)habit-tracker" Command="npm run build" />
+  </Target>
+  
+  <!-- Update Vite to build to its default location and then copy -->
+  <Target Name="PublishFrontend" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <DistFiles Include="habit-tracker\dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8" />
