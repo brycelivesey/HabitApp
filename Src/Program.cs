@@ -17,27 +17,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add environment variables as a configuration source
 builder.Configuration.AddEnvironmentVariables();
 
-// Validate required configuration
-var mongoUser = builder.Configuration["MONGO_USER"] ?? throw new InvalidOperationException("MONGO_USER environment variable is not set");
-var mongoPassword = builder.Configuration["MONGO_PASSWORD"] ?? throw new InvalidOperationException("MONGO_PASSWORD environment variable is not set");
-var jwtSecret = builder.Configuration["JWT_SECRET"] ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set");
+// Get MongoDB settings from user secrets/configuration
+var mongoUser = builder.Configuration["MONGO_USER"] ?? throw new InvalidOperationException("MONGO_USER is not configured in user secrets");
+var mongoPassword = builder.Configuration["MONGO_PASSWORD"] ?? throw new InvalidOperationException("MONGO_PASSWORD is not configured in user secrets");
+var jwtSecret = builder.Configuration["JWT_SECRET"] ?? throw new InvalidOperationException("JWT_SECRET is not configured in user secrets");
 
-// Configure MongoDB connection string from environment variables
-var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"]
-    ?.Replace("localhost", "habit-mongodb") // Use Docker service name
-    ?? "mongodb://habit-mongodb:27017";
+// Configure MongoDB connection string
+// MongoDB connection string with required credentials
+var mongoHost = builder.Environment.IsDevelopment() ? "localhost" : "habit-mongodb";
+var mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@{mongoHost}:27017";
 
-if (!string.IsNullOrEmpty(mongoUser) && !string.IsNullOrEmpty(mongoPassword))
-{
-    mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@habit-mongodb:27017";
-}
-
-// Use localhost for development environment
-if (builder.Environment.IsDevelopment())
-{
-    mongoConnectionString = mongoConnectionString.Replace("habit-mongodb", "localhost");
-}
-
+// Configure MongoDB settings
 builder.Services.Configure<MongoDbSettings>(options =>
 {
     options.ConnectionString = mongoConnectionString;
@@ -45,28 +35,31 @@ builder.Services.Configure<MongoDbSettings>(options =>
 });
 
 // Configure JWT settings
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "habit-api";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "habit-client";
+
 builder.Services.Configure<JwtSettings>(options =>
 {
-    options.Issuer = builder.Configuration["Jwt:Issuer"] ?? "habit-api";
-    options.Audience = builder.Configuration["Jwt:Audience"] ?? "habit-client";
-    options.Key = jwtSecret; // Use environment variable for JWT secret
+    options.Issuer = jwtIssuer;
+    options.Audience = jwtAudience;
+    options.Key = jwtSecret;
 });
 
 var jwtSettings = new JwtSettings
 {
-    Issuer = builder.Configuration["Jwt:Issuer"] ?? "habit-api",
-    Audience = builder.Configuration["Jwt:Audience"] ?? "habit-client",
+    Issuer = jwtIssuer,
+    Audience = jwtAudience,
     Key = jwtSecret
 };
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 
+// Register services
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IGoalRepository, GoalRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IMongoDbInitializer, MongoDbInitializer>();
-
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
 // Add Authorization with policies
