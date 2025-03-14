@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.RateLimiting;
 using Src.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-// if (builder.Environment.IsDevelopment())
-// {
+if (builder.Environment.IsDevelopment())
+{
     builder.Configuration.AddUserSecrets<Program>();
-// }
+}
 
 // Add environment variables as a configuration source
 builder.Configuration.AddEnvironmentVariables();
@@ -29,8 +29,8 @@ var jwtSecret = builder.Configuration["JWT_SECRET"] ?? throw new InvalidOperatio
 
 // Configure MongoDB connection string
 // MongoDB connection string with required credentials
-var mongoHost = builder.Environment.IsDevelopment() ? "localhost" : "localhost";
-var mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@{mongoHost}:27017/?authSource=admin&authMechanism=SCRAM-SHA-1";
+var mongoHost = builder.Environment.IsDevelopment() ? "localhost" : "habit-mongodb";
+var mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@{mongoHost}:27017";
 
 // Configure MongoDB settings
 builder.Services.Configure<MongoDbSettings>(options =>
