@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <!-- Frontend build automation -->
-  <Target Name="BuildFrontend" BeforeTargets="Build">
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
     <Exec WorkingDirectory="$(ProjectDir)habit-tracker" Command="npm install" />
     <Exec WorkingDirectory="$(ProjectDir)habit-tracker" Command="npm run build" />
   </Target>

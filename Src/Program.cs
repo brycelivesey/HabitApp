@@ -13,6 +13,10 @@ using Src.Services;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 
 // Add environment variables as a configuration source
 builder.Configuration.AddEnvironmentVariables();

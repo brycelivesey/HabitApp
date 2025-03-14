@@ -1,7 +1,7 @@
 services:
   mongodb:
     image: mongo
-    container_name: mongodb
+    container_name: habit-mongodb
     ports:
       - "27017:27017"
     environment:
@@ -10,6 +10,33 @@ services:
     volumes:
       - mongodb_data:/data/db
     restart: unless-stopped
+    networks:
+      - habit-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: habit-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MONGO_USER=habitdb_user
+      - MONGO_PASSWORD=password
+      - JWT_SECRET=secretsecretsecretsecretsecretsecretsecretsecret
+    depends_on:
+      - mongodb
+    networks:
+      - habit-network
+    volumes:
+      - ./Src:/src
+      - dotnet_packages:/root/.nuget/packages
 
 volumes:
   mongodb_data:
+  dotnet_packages:
+
+networks:
+  habit-network:
+    driver: bridge
