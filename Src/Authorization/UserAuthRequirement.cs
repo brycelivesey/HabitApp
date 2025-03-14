@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Src.Authorization;
@@ -10,7 +11,7 @@ public class UserAuthHandler : AuthorizationHandler<UserAuthRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, UserAuthRequirement requirement)
     {
-        var userIdClaim = context.User.FindFirst("sub")?.Value;
+        var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userIdClaim))
         {

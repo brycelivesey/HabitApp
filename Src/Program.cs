@@ -11,12 +11,13 @@ using Src.Models;
 using Src.Repositories;
 using Src.Services;
 using Microsoft.AspNetCore.RateLimiting;
+using Src.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
-if (builder.Environment.IsDevelopment())
-{
+// if (builder.Environment.IsDevelopment())
+// {
     builder.Configuration.AddUserSecrets<Program>();
-}
+// }
 
 // Add environment variables as a configuration source
 builder.Configuration.AddEnvironmentVariables();
@@ -28,8 +29,8 @@ var jwtSecret = builder.Configuration["JWT_SECRET"] ?? throw new InvalidOperatio
 
 // Configure MongoDB connection string
 // MongoDB connection string with required credentials
-var mongoHost = builder.Environment.IsDevelopment() ? "localhost" : "habit-mongodb";
-var mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@{mongoHost}:27017";
+var mongoHost = builder.Environment.IsDevelopment() ? "localhost" : "localhost";
+var mongoConnectionString = $"mongodb://{mongoUser}:{mongoPassword}@{mongoHost}:27017/?authSource=admin&authMechanism=SCRAM-SHA-1";
 
 // Configure MongoDB settings
 builder.Services.Configure<MongoDbSettings>(options =>
@@ -144,6 +145,12 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Only apply UserAuthMiddleware to /api routes
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+{
+    appBuilder.UseMiddleware<UserAuthMiddleware>();
+});
 
 // Add rate limiting middleware
 app.UseRateLimiter();
