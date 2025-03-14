@@ -35,9 +35,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - MONGO_USER=${MONGO_USER}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MongoDB__ConnectionString=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@habit-mongodb:27017
       - JWT_SECRET=${JWT_SECRET}
-      - JWT__Secret=${JWT_SECRET}
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
     deploy:
       resources:
