@@ -33,7 +33,7 @@ namespace Src.Services
                 claims: new[] 
                 { 
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim("sub", user.Id.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 },
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds

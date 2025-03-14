@@ -11,6 +11,7 @@ using Src.Models;
 using Src.Repositories;
 using Src.Services;
 using Microsoft.AspNetCore.RateLimiting;
+using Src.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsDevelopment())
@@ -144,6 +145,12 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Only apply UserAuthMiddleware to /api routes
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
+{
+    appBuilder.UseMiddleware<UserAuthMiddleware>();
+});
 
 // Add rate limiting middleware
 app.UseRateLimiter();
