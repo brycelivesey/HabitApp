@@ -17,7 +17,7 @@ namespace Src.Controllers
             _goalService = goalService;
         }
 
-        [HttpPost("goals")]
+        [HttpPost]
         public async Task<ActionResult<Guid>> AddGoal([FromBody] DailyGoal goal)
         {
             try 
@@ -31,7 +31,7 @@ namespace Src.Controllers
             }
         }
 
-        [HttpDelete("goals/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Guid>> DeleteGoal(Guid id)
         {
             try 
@@ -45,7 +45,7 @@ namespace Src.Controllers
             }
         }
 
-        [HttpPut("goals")]
+        [HttpPut]
         public async Task<ActionResult<Guid>> EditGoal([FromBody] DailyGoal goal)
         {
             try 
@@ -59,7 +59,7 @@ namespace Src.Controllers
             }
         }
 
-        [HttpPost("goals/{id}/contributions")]
+        [HttpPost("{id}/contributions")]
         public async Task<ActionResult<Guid>> AddContribution(Guid id, [FromBody] string date)
         {
             try 
@@ -73,7 +73,7 @@ namespace Src.Controllers
             }
         }
 
-        [HttpGet("goals")]
+        [HttpGet]
         public async Task<ActionResult<DailyGoal>> GetUserGoals()
         {
             try 
