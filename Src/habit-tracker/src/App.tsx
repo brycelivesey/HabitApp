@@ -8,7 +8,7 @@ import { authService } from './services/auth.service';
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -22,7 +22,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
         if (!location.state?.justLoggedIn) {
           await authService.refreshToken();
         }
-        setIsLoading(false);
+        // setIsLoading(false);
       } catch (error) {
         navigate('/login');
       }
@@ -42,9 +42,9 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(refreshInterval);
   }, [navigate]);
 
-  if (isLoading) {
-    return <div>Loading...</div>; // Or your loading component
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>; // Or your loading component
+  // }
 
   return <>{children}</>;
 };
